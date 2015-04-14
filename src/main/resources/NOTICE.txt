@@ -1,0 +1,19 @@
+This product includes software developed by Cagatay Civici AS Primefaces (http://primefaces.org/)
+This product includes software developed by John Resig (http://http://jquery.com)
+This product includes software developed by jQuery UI (http://jqueryui.com)
+This product includes software developed by Dygraphs (http://dygraphs.com)
+	dygraphs uses:
+		 - excanvas.js (http://code.google.com/p/explorercanvas/)
+		 - YUI compressor (http://developer.yahoo.com/yui/compressor/)
+		 - JsDoc Toolkit (http://code.google.com/p/jsdoc-toolkit/)
+		 - console-polyfill (MIT license)
+
+	automated tests use:
+		 - auto_tests/lib/jquery-1.4.2.js (http://http://jquery.com)
+		 - auto_tests/lib/Asserts.js (http://www.google.com/codesearch/p?#3tsINRJRCro/trunk/JsTestDriver/src/com/google/jstestdriver/javascript/Asserts.js)
+		 - auto-tests/lib/JsTestDriver-1.3.3cjar (http://code.google.com/p/js-test-driver/)
+		 
+
+This product includes software developed by Jeremy Ashkenas AS Underscore JS (http://underscorejs.org)
+This product includes software developed by Esa-Matti Suuronen AS Underscore String (http://epeli.github.com/underscore.string/)
+This product includes software developed by Moment (http://momentjs.com)
