@@ -1,6 +1,9 @@
 package org.dyfaces.renderer;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.faces.application.ResourceDependencies;
 import javax.faces.application.ResourceDependency;
@@ -10,8 +13,12 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.render.FacesRenderer;
 import javax.faces.render.Renderer;
 
+import org.dyfaces.DyAttributes;
 import org.dyfaces.Version;
 import org.dyfaces.component.Dygraph;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @FacesRenderer(componentFamily = Dygraph.COMPONENT_FAMILY, rendererType = DygraphRenderer.RENDERER_TYPE)
 @ResourceDependencies({
@@ -49,15 +56,29 @@ public class DygraphRenderer extends Renderer {
 		writer.writeAttribute("id", divId, null);
 		writer.endElement("div");
 		
+		String dygraphAttributes = getDygraphAttribures(dygraph);
+		
 		writer.startElement("script", dygraph);
 		writer.writeAttribute("type", "text/javascript", null);
 		StringBuilder graphBuilder = new StringBuilder("new Dygraph(");
 		graphBuilder.append("document.getElementById(\"").append(divId).append("\"),");
 		graphBuilder.append("[[1,10,100],[2,20,80],[3,50,60],[4,70,80]],");
-		graphBuilder.append("{labels: [ 'x', 'A', 'B' ]}");
+		//graphBuilder.append("{");
+		graphBuilder.append(dygraphAttributes);
+		//graphBuilder.append("labels: [ 'x', 'A', 'B' ]");
+		//graphBuilder.append("}");
 		graphBuilder.append(")");
 		writer.write(graphBuilder.toString());
 		writer.endElement("script");
 		
+		
+	}
+
+	private String getDygraphAttribures(Dygraph dygraph) {
+		Map<String,Object> attr = dygraph.getAttributes();
+		Gson gson = new Gson();
+		GsonBuilder builder = new GsonBuilder();
+		DyAttributes attributes = builder.create().fromJson(gson.toJson(attr), DyAttributes.class);
+		return gson.toJson(attributes);
 	}
 }
