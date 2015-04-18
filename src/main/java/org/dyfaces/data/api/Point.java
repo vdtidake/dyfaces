@@ -1,4 +1,4 @@
-package org.dyfaces.data;
+package org.dyfaces.data.api;
 
 public interface Point {
 	public Object getxValue();

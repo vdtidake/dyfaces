@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.dyfaces.data.DataSeries;
 import org.dyfaces.data.api.DataModel;
+import org.dyfaces.data.api.DataSeries;
 
 public class DyDataModel implements Serializable, DataModel{
 	/**

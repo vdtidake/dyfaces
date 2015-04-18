@@ -1,4 +1,4 @@
-package org.dyfaces.data;
+package org.dyfaces.data.api;
 
 import java.util.List;
 

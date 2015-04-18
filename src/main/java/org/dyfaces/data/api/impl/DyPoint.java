@@ -2,7 +2,7 @@ package org.dyfaces.data.api.impl;
 
 import java.io.Serializable;
 
-import org.dyfaces.data.Point;
+import org.dyfaces.data.api.Point;
 
 public class DyPoint implements Serializable,Point{
 	/*

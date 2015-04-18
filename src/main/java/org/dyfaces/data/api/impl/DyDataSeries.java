@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.dyfaces.data.DataSeries;
-import org.dyfaces.data.Point;
+import org.dyfaces.data.api.DataSeries;
+import org.dyfaces.data.api.Point;
 
 public class DyDataSeries implements Serializable,DataSeries{
 	private String series;

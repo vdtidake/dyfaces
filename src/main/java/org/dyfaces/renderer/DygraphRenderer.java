@@ -20,9 +20,9 @@ import javax.faces.render.Renderer;
 import org.dyfaces.DyAttributes;
 import org.dyfaces.Version;
 import org.dyfaces.component.Dygraph;
-import org.dyfaces.data.DataSeries;
-import org.dyfaces.data.Point;
 import org.dyfaces.data.api.DataModel;
+import org.dyfaces.data.api.DataSeries;
+import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.impl.DyDataModel;
 import org.dyfaces.data.api.impl.DyDataSeries;
 
