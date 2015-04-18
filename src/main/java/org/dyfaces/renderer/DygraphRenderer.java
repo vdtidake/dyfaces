@@ -87,6 +87,7 @@ public class DygraphRenderer extends Renderer {
 	private StringBuilder getDyGraphData(Dygraph dygraph) {
 		Object dataModel= dygraph.getDyDataModel();
 		Map<Object,List<Number>> seriesMap = new HashMap<Object, List<Number>>();
+		StringBuilder data = new StringBuilder("[");
 		
 		if(dataModel instanceof DataModel){
 			DataModel dyDataModel = (DyDataModel) dataModel;
@@ -105,46 +106,52 @@ public class DygraphRenderer extends Renderer {
 					}
 				}
 			}
-		}
-		StringBuilder data = new StringBuilder("[");
-		List<List<Object>> mergedSerieses = new ArrayList<List<Object>>();
-		if(!seriesMap.isEmpty()){
-			for(Map.Entry<Object, List<Number>> entry : seriesMap.entrySet()){
-				Object key = entry.getKey();
-				List<Number> value = entry.getValue();
-				List<Object> dydata= new ArrayList<Object>();
-				dydata.add(0, key);
-				for (int i = 1; i <= value.size(); i++) {
-					dydata.add(i, value.get(i-1));					
-				}
-				mergedSerieses.add(dydata);
-			}
-		}
-		Collections.sort(mergedSerieses, new Comparator<List<Object>>() {
-
-			@Override
-			public int compare(List<Object> d1, List<Object> d2) {
-				Object index1 = d1.get(0);
-				Object index2 = d2.get(0);
-		 
-				if(index1 instanceof Number && index2 instanceof Number){
-					Number no1 = (Number) index1;
-					Number no2 = (Number) index2;
-					
-					if (no1.doubleValue() > no2.doubleValue()) {
-						return 1;
-					} else if (no1.doubleValue() < no2.doubleValue()) {
-						return -1;
-					} else {
-						return 0;
+			
+			List<List<Object>> mergedSerieses = new ArrayList<List<Object>>();
+			if(!seriesMap.isEmpty()){
+				for(Map.Entry<Object, List<Number>> entry : seriesMap.entrySet()){
+					Object key = entry.getKey();
+					List<Number> value = entry.getValue();
+					List<Object> dydata= new ArrayList<Object>();
+					dydata.add(0, key);
+					for (int i = 1; i <= value.size(); i++) {
+						dydata.add(i, value.get(i-1));					
 					}
+					mergedSerieses.add(dydata);
 				}
-				return 0;
 			}
-		});
-		for (List<Object> list : mergedSerieses) {
-			data.append(list).append(",");
+			Collections.sort(mergedSerieses, new Comparator<List<Object>>() {
+
+				@Override
+				public int compare(List<Object> d1, List<Object> d2) {
+					Object index1 = d1.get(0);
+					Object index2 = d2.get(0);
+			 
+					if(index1 instanceof Number && index2 instanceof Number){
+						Number no1 = (Number) index1;
+						Number no2 = (Number) index2;
+						
+						if (no1.doubleValue() > no2.doubleValue()) {
+							return 1;
+						} else if (no1.doubleValue() < no2.doubleValue()) {
+							return -1;
+						} else {
+							return 0;
+						}
+					}
+					return 0;
+				}
+			});
+			for (List<Object> list : mergedSerieses) {
+				data.append(list).append(",");
+			}
+		}else if(dataModel instanceof List){
+			List<Point> points = (List<Point>) dataModel;
+			for (Point point : points) {
+				data.append(Arrays.asList(point.getxValue(),point.getyValue())).append(",");
+			}
 		}
+	
 		data.append("],");
 		return data;
 	}

@@ -18,8 +18,11 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 
 	public Object getDyDataModel() {
 		try {
-			return Object.class.cast(this.getStateHelper().eval("model",
-					null));
+			Object value = getValue();
+			if(value != null){
+				return value;
+			}
+			return this.getStateHelper().eval("model",null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
