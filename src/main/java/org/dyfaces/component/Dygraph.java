@@ -1,5 +1,7 @@
 package org.dyfaces.component;
 
+import javax.el.ELContext;
+import javax.el.ValueExpression;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIOutput;
 import javax.faces.component.behavior.ClientBehaviorHolder;
@@ -13,4 +15,25 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	public String getFamily() {
 		return COMPONENT_FAMILY;
 	}
+
+	public Object getDyDataModel() {
+		try {
+			return Object.class.cast(this.getStateHelper().eval("model",
+					null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	/*public void setDyDataModel(Object value) {
+        this.getStateHelper().put("model", value);
+        ValueExpression f = getValueExpression("model");
+
+        if (f != null) {
+
+            ELContext elContext = this.getFacesContext().getELContext();
+
+            f.setValue(elContext, value);
+        }
+    }*/
 }

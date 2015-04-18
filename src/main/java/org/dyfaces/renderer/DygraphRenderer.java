@@ -1,8 +1,10 @@
 package org.dyfaces.renderer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.application.ResourceDependencies;
@@ -16,6 +18,10 @@ import javax.faces.render.Renderer;
 import org.dyfaces.DyAttributes;
 import org.dyfaces.Version;
 import org.dyfaces.component.Dygraph;
+import org.dyfaces.data.DataSeries;
+import org.dyfaces.data.api.DataModel;
+import org.dyfaces.data.api.impl.DyDataModel;
+import org.dyfaces.data.api.impl.DyDataSeries;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -62,7 +68,8 @@ public class DygraphRenderer extends Renderer {
 		writer.writeAttribute("type", "text/javascript", null);
 		StringBuilder graphBuilder = new StringBuilder("new Dygraph(");
 		graphBuilder.append("document.getElementById(\"").append(divId).append("\"),");
-		graphBuilder.append("[[1,10,100],[2,20,80],[3,50,60],[4,70,80]],");
+		StringBuilder data = getDyGraphData(dygraph);
+		graphBuilder.append(data.toString());
 		//graphBuilder.append("{");
 		graphBuilder.append(dygraphAttributes);
 		//graphBuilder.append("labels: [ 'x', 'A', 'B' ]");
@@ -72,6 +79,22 @@ public class DygraphRenderer extends Renderer {
 		writer.endElement("script");
 		
 		
+	}
+
+	private StringBuilder getDyGraphData(Dygraph dygraph) {
+		Object dataModel= dygraph.getDyDataModel();
+		StringBuilder data = new StringBuilder();
+		if(dataModel instanceof DataModel){
+			DataModel dyDataModel = (DyDataModel) dataModel;
+			if(dyDataModel != null){
+				//List<Number> tmp = new ArrayList<Number>();
+				for (DataSeries series : dyDataModel.getDataSeries()) {
+					data.append(series.getDataPoints().toString());
+				}
+			}
+		}
+		data.append(",");
+		return data;
 	}
 
 	private String getDygraphAttribures(Dygraph dygraph) {
