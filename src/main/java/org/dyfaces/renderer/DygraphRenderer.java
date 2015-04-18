@@ -3,6 +3,8 @@ package org.dyfaces.renderer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import org.dyfaces.DyAttributes;
 import org.dyfaces.Version;
 import org.dyfaces.component.Dygraph;
 import org.dyfaces.data.DataSeries;
+import org.dyfaces.data.Point;
 import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.impl.DyDataModel;
 import org.dyfaces.data.api.impl.DyDataSeries;
@@ -83,17 +86,66 @@ public class DygraphRenderer extends Renderer {
 
 	private StringBuilder getDyGraphData(Dygraph dygraph) {
 		Object dataModel= dygraph.getDyDataModel();
-		StringBuilder data = new StringBuilder();
+		Map<Object,List<Number>> seriesMap = new HashMap<Object, List<Number>>();
+		
 		if(dataModel instanceof DataModel){
 			DataModel dyDataModel = (DyDataModel) dataModel;
 			if(dyDataModel != null){
-				//List<Number> tmp = new ArrayList<Number>();
 				for (DataSeries series : dyDataModel.getDataSeries()) {
-					data.append(series.getDataPoints().toString());
+					List<Point> points = series.getDataPoints();
+					for (Point point : points) {
+						if(seriesMap.containsKey(point.getxValue())){
+							List<Number> tmp = seriesMap.get(point.getxValue());
+							tmp.add(point.getyValue());
+						}else{
+							List<Number> tmp = new ArrayList<Number>();
+							tmp.add(point.getyValue());
+							seriesMap.put(point.getxValue(), tmp);
+						}
+					}
 				}
 			}
 		}
-		data.append(",");
+		StringBuilder data = new StringBuilder("[");
+		List<List<Object>> mergedSerieses = new ArrayList<List<Object>>();
+		if(!seriesMap.isEmpty()){
+			for(Map.Entry<Object, List<Number>> entry : seriesMap.entrySet()){
+				Object key = entry.getKey();
+				List<Number> value = entry.getValue();
+				List<Object> dydata= new ArrayList<Object>();
+				dydata.add(0, key);
+				for (int i = 1; i <= value.size(); i++) {
+					dydata.add(i, value.get(i-1));					
+				}
+				mergedSerieses.add(dydata);
+			}
+		}
+		Collections.sort(mergedSerieses, new Comparator<List<Object>>() {
+
+			@Override
+			public int compare(List<Object> d1, List<Object> d2) {
+				Object index1 = d1.get(0);
+				Object index2 = d2.get(0);
+		 
+				if(index1 instanceof Number && index2 instanceof Number){
+					Number no1 = (Number) index1;
+					Number no2 = (Number) index2;
+					
+					if (no1.doubleValue() > no2.doubleValue()) {
+						return 1;
+					} else if (no1.doubleValue() < no2.doubleValue()) {
+						return -1;
+					} else {
+						return 0;
+					}
+				}
+				return 0;
+			}
+		});
+		for (List<Object> list : mergedSerieses) {
+			data.append(list).append(",");
+		}
+		data.append("],");
 		return data;
 	}
 
