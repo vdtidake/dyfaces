@@ -85,6 +85,38 @@
             <required>false</required>
             <type>java.lang.Object</type>
         </attribute>
+        <!-- POINT SETTINGS -->
+        <attribute>
+			<name>drawPoints</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+        <attribute>
+			<name>pointSize</name>
+			<required>false</required>
+			<type>java.lang.Short</type>
+		</attribute>
+		<attribute>
+			<name>highlightCircleSize</name>
+			<required>false</required>
+			<type>java.lang.Short</type>
+		</attribute>
+		 <!-- GRID SETTINGS -->
+		  <attribute>
+			<name>drawGrid</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		 <attribute>
+			<name>drawXAxis</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		 <attribute>
+			<name>drawYAxis</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
 	</tag>
 </facelet-taglib>
     

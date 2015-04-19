@@ -3,11 +3,23 @@ package org.dyfaces;
 public class DyAttributes {
 	private String legend=LegendOptions.always.name();
 	private String title;
-	private Boolean showRoller=false;
+	private Boolean showRoller=Boolean.FALSE;
 	private Integer rollPeriod=0;
-	private Boolean customBars=false;
+	private Boolean customBars=Boolean.FALSE;
 	private String ylabel;
 	private String xlabel;
+	/*
+	 * Point settings
+	 */
+	private Boolean drawPoints;
+	private Short pointSize;
+	private Short highlightCircleSize;
+	/*
+	 * Grid settings
+	 */
+	private Boolean drawGrid=Boolean.TRUE;
+	private Boolean drawXAxis;
+	private Boolean drawYAxis;
 	
 	public String getLegend() {
 		return legend;
@@ -51,5 +63,42 @@ public class DyAttributes {
 	public void setXlabel(String xlabel) {
 		this.xlabel = xlabel;
 	}
+	public Boolean getDrawPoints() {
+		return drawPoints;
+	}
+	public void setDrawPoints(Boolean drawPoints) {
+		this.drawPoints = drawPoints;
+	}
+	public Short getPointSize() {
+		return pointSize;
+	}
+	public void setPointSize(Short pointSize) {
+		this.pointSize = pointSize;
+	}
+	public Short getHighlightCircleSize() {
+		return highlightCircleSize;
+	}
+	public void setHighlightCircleSize(Short highlightCircleSize) {
+		this.highlightCircleSize = highlightCircleSize;
+	}
+	public Boolean getDrawGrid() {
+		return drawGrid;
+	}
+	public void setDrawGrid(Boolean drawGrid) {
+		this.drawGrid = drawGrid;
+	}
+	public Boolean getDrawXAxis() {
+		return drawXAxis;
+	}
+	public void setDrawXAxis(Boolean drawXAxis) {
+		this.drawXAxis = drawXAxis;
+	}
+	public Boolean getDrawYAxis() {
+		return drawYAxis;
+	}
+	public void setDrawYAxis(Boolean drawYAxis) {
+		this.drawYAxis = drawYAxis;
+	}
+	
 	
 }
