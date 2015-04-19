@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,8 @@ import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.impl.DyDataModel;
-import org.dyfaces.data.api.impl.DyDataSeries;
+import org.dyfaces.data.api.impl.DyPoint;
+import org.dyfaces.utils.DyUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -138,6 +140,16 @@ public class DygraphRenderer extends Renderer {
 						} else {
 							return 0;
 						}
+					}else if(index1 instanceof Date && index2 instanceof Date){
+						Date no1 = (Date) index1;
+						Date no2 = (Date) index2;
+						if (no1.before(no2)) {
+							return 1;
+						} else if (no1.after(no2)) {
+							return -1;
+						} else {
+							return 0;
+						}
 					}
 					return 0;
 				}
@@ -146,10 +158,19 @@ public class DygraphRenderer extends Renderer {
 				data.append(list).append(",");
 			}
 		}else if(dataModel instanceof List){
-			List<Point> points = (List<Point>) dataModel;
-			for (Point point : points) {
-				data.append(Arrays.asList(point.getxValue(),point.getyValue())).append(",");
+			List<DyPoint> points = (List<DyPoint>) dataModel;
+			if(points != null && !points.isEmpty()){
+				Collections.sort(points);
+				for (Point point : points) {
+					if(point.getxValue() instanceof Date){
+						data.append(Arrays.asList(DyUtils.getJSDyDate(point.getxValue()),point.getyValue())).append(",");
+					}else{
+						data.append(Arrays.asList(point.getxValue(),point.getyValue())).append(",");
+					}
+					
+				}
 			}
+			
 		}
 	
 		data.append("],");

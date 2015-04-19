@@ -1,7 +1,5 @@
 package org.dyfaces.component;
 
-import javax.el.ELContext;
-import javax.el.ValueExpression;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIOutput;
 import javax.faces.component.behavior.ClientBehaviorHolder;
