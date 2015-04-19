@@ -6,6 +6,43 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Dyfaces</name>
 	<description>"JSF Chart Library" based on dygraph (http://dygraphs.com)</description>
+	
+	<licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+    
+    <scm>
+        <connection>
+            https://github.com/vdtidake/dyfaces.git
+        </connection>
+        <developerConnection>
+            https://github.com/vdtidake/dyfaces.git
+        </developerConnection>
+        <url>
+            https://github.com/vdtidake/dyfaces.git
+        </url>
+    </scm>
+    
+    <developers>
+        <developer>
+            <id>vdtidake</id>
+            <name>Vijaykumar Tidake</name>
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <email>vijaykumar.tidake@gmail.com</email>
+            <name>Vijaykumar Tidake</name>
+            <roles>
+                <role>Lead Developer</role>
+            </roles>
+        </contributor>
+    </contributors>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
