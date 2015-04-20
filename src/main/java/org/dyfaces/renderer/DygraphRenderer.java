@@ -82,10 +82,13 @@ public class DygraphRenderer extends Renderer {
 		writer.writeAttribute("type", "text/javascript", null);
 		Map<String,Object> attr = dygraph.getAttributes();
 		String graphJSVar = (String) attr.get("var");
+		if(graphJSVar == null){
+			graphJSVar=divId;
+		}
 		/*
 		 * assign Dygraph object to javascript variable defined with 'var' attribute
 		 */
-		StringBuilder graphBuilder = new StringBuilder((graphJSVar!=null?("var "+graphJSVar+"="):(""))+"new Dygraph(");
+		StringBuilder graphBuilder = new StringBuilder("var "+graphJSVar+"= new Dygraph(");
 		graphBuilder.append("document.getElementById(\"").append(divId).append("\"),");
 		/*
 		 * get Dygraph data defined with either value or model attribute
@@ -96,13 +99,32 @@ public class DygraphRenderer extends Renderer {
 		 * append graph attributes to Dygraph
 		 */
 		graphBuilder.append(dygraphAttributes);
-		graphBuilder.append(")");
+		graphBuilder.append(");");
 		/*
 		 * write all Dygraph script to response
 		 */
 		writer.write(graphBuilder.toString());
+		/*
+		 *Dygraph callback options 
+		 */
+		bindDyCallbacks(context,graphJSVar,dygraph);
 		writer.endElement("script");
 		
+		
+	}
+
+	private void bindDyCallbacks(FacesContext context,String graphJSVar,Dygraph dygraph) throws IOException {
+		Map<String,Object> attr = dygraph.getAttributes();
+		String clickCallback = (String) attr.get("clickCallback");
+		if(graphJSVar != null){
+			ResponseWriter writer = context.getResponseWriter();
+			StringBuilder graphBuilder = new StringBuilder("var clickCallbackBuilder = function(g) {");
+			graphBuilder.append("return function(e, x, points) {");
+			graphBuilder.append(clickCallback).append("(e, x, points,g)");
+			graphBuilder.append("}};");
+			graphBuilder.append(graphJSVar).append(".updateOptions({clickCallback : clickCallbackBuilder(").append(graphJSVar).append(")})");
+			writer.write(graphBuilder.toString());
+		}
 		
 	}
 
