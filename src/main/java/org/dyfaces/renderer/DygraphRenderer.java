@@ -19,6 +19,7 @@ import javax.faces.render.FacesRenderer;
 import javax.faces.render.Renderer;
 
 import org.dyfaces.DyAttributes;
+import org.dyfaces.DyCallbacks;
 import org.dyfaces.Version;
 import org.dyfaces.component.Dygraph;
 import org.dyfaces.data.api.DataModel;
@@ -37,9 +38,14 @@ import com.google.gson.GsonBuilder;
 		@ResourceDependency(library = "webjars", name = Version.DYGRAPH_RESOURCES
 				+ "/dygraph-combined.js"),
 		@ResourceDependency(library = "webjars", name = Version.DYGRAPH_RESOURCES
-				+ "/dygraph-interaction-model.js") })
+				+ "/dygraph-interaction-model.js"),
+		@ResourceDependency(library = "webjars", name = Version.UNDERSCORE_RESOURCES
+				+ "/underscore-min.js") })
 public class DygraphRenderer extends Renderer {
 	public static final String RENDERER_TYPE = "org.dyfaces.component.graph.renderer";
+	private static final Gson gson = new Gson();
+	private static final GsonBuilder builder = new GsonBuilder();
+	
 
 	@Override
 	public void decode(FacesContext context, UIComponent component) {
@@ -70,10 +76,6 @@ public class DygraphRenderer extends Renderer {
 		writer.writeAttribute("id", divId, null);
 		writer.endElement("div");
 		
-		/*
-		 * get Dygraph attributes
-		 */
-		String dygraphAttributes = getDygraphAttribures(dygraph);
 		
 		/*
 		 * start Dygraph creation inside <script> tag
@@ -93,8 +95,14 @@ public class DygraphRenderer extends Renderer {
 		/*
 		 * get Dygraph data defined with either value or model attribute
 		 */
-		StringBuilder data = getDyGraphData(dygraph);
+		Map<String,Object> datamodelAttributes = new HashMap<String, Object>(3);
+		StringBuilder data = getDyGraphData(dygraph,datamodelAttributes);
 		graphBuilder.append(data.toString());
+		/*
+		 * get Dygraph attributes
+		 */
+		String dygraphAttributes = getDygraphAttribures(dygraph,datamodelAttributes);
+		
 		/*
 		 * append graph attributes to Dygraph
 		 */
@@ -114,18 +122,13 @@ public class DygraphRenderer extends Renderer {
 	}
 
 	private void bindDyCallbacks(FacesContext context,String graphJSVar,Dygraph dygraph) throws IOException {
-		Map<String,Object> attr = dygraph.getAttributes();
-		String clickCallback = (String) attr.get("clickCallback");
-		if(graphJSVar != null){
+		String callbacks = getDygraphCallbacks(dygraph);
+		if(callbacks != null){
 			ResponseWriter writer = context.getResponseWriter();
-			StringBuilder graphBuilder = new StringBuilder("var clickCallbackBuilder = function(g) {");
-			graphBuilder.append("return function(e, x, points) {");
-			graphBuilder.append(clickCallback).append("(e, x, points,g)");
-			graphBuilder.append("}};");
-			graphBuilder.append(graphJSVar).append(".updateOptions({clickCallback : clickCallbackBuilder(").append(graphJSVar).append(")})");
+			StringBuilder graphBuilder = new StringBuilder();
+			graphBuilder.append(graphJSVar).append(".updateOptions(").append(callbacks).append(")");
 			writer.write(graphBuilder.toString());
 		}
-		
 	}
 
 	/**
@@ -133,15 +136,31 @@ public class DygraphRenderer extends Renderer {
 	 * @param dygraph
 	 * @return parsed Dygraph data
 	 */
-	private StringBuilder getDyGraphData(Dygraph dygraph) {
+	private StringBuilder getDyGraphData(Dygraph dygraph,Map<String,Object> datamodelAttributes) {
 		Object dataModel= dygraph.getDyDataModel();
 		Map<Object,List<Number>> seriesMap = new HashMap<Object, List<Number>>();
 		StringBuilder data = new StringBuilder("[");
 		
 		if(dataModel instanceof DataModel){
 			DataModel dyDataModel = (DyDataModel) dataModel;
+			
 			if(dyDataModel != null){
+				if(dyDataModel.getGraphTitle() != null){
+					datamodelAttributes.put("title", dyDataModel.getGraphTitle());
+				}
+				if(dyDataModel.getxAxisLable() != null){
+					datamodelAttributes.put("xlabel", dyDataModel.getxAxisLable());
+				}
+				if(dyDataModel.getyAxisLable() != null){
+					datamodelAttributes.put("ylabel", dyDataModel.getyAxisLable());
+				}
+				List<String> seriesLabels = new ArrayList<String>(dyDataModel.getDataSeries().size());
+				seriesLabels.add("");
 				for (DataSeries series : dyDataModel.getDataSeries()) {
+					String name = series.getSeries();
+					if(name != null && !name.isEmpty()){
+						seriesLabels.add(name);
+					}
 					List<Point> points = series.getDataPoints();
 					for (Point point : points) {
 						if(seriesMap.containsKey(point.getxValue())){
@@ -153,6 +172,9 @@ public class DygraphRenderer extends Renderer {
 							seriesMap.put(point.getxValue(), tmp);
 						}
 					}
+				}
+				if(!seriesLabels.isEmpty()){
+					datamodelAttributes.put("labels", seriesLabels);
 				}
 			}
 			
@@ -235,11 +257,38 @@ public class DygraphRenderer extends Renderer {
 	 * @param dygraph
 	 * @return Json string of Dygraph attributes
 	 */
-	private String getDygraphAttribures(Dygraph dygraph) {
+	private String getDygraphAttribures(Dygraph dygraph,Map<String,Object> datamodelAttributes) {
 		Map<String,Object> attr = dygraph.getAttributes();
-		Gson gson = new Gson();
-		GsonBuilder builder = new GsonBuilder();
 		DyAttributes attributes = builder.create().fromJson(gson.toJson(attr), DyAttributes.class);
+		if(!datamodelAttributes.isEmpty()){
+			if(datamodelAttributes.containsKey("title")){
+				attributes.setTitle((String) datamodelAttributes.get("title"));
+			}
+			if (datamodelAttributes.containsKey("xlabel")) {
+				attributes.setXlabel((String) datamodelAttributes.get("xlabel"));
+			}
+			if (datamodelAttributes.containsKey("ylabel")) {
+				attributes.setYlabel((String) datamodelAttributes.get("ylabel"));
+			}
+			if (datamodelAttributes.containsKey("labels")) {
+				List<String> labels = List.class.cast(datamodelAttributes.get("labels"));
+				if(labels.size() > 1){
+					attributes.setLabels(labels);
+				}
+			}
+			
+		}
 		return gson.toJson(attributes);
+	}
+	
+	/**
+	 * 
+	 * @param dygraph
+	 * @return Json string of Dygraph callback function name
+	 */
+	private String getDygraphCallbacks(Dygraph dygraph) {
+		Map<String,Object> attr = dygraph.getAttributes();
+		DyCallbacks attributes = builder.create().fromJson(gson.toJson(attr), DyCallbacks.class);
+		return gson.toJson(attributes).replaceAll("\"", "");
 	}
 }
