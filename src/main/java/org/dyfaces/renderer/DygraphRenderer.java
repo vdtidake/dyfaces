@@ -63,29 +63,54 @@ public class DygraphRenderer extends Renderer {
 		Dygraph dygraph = (Dygraph) component;
 		ResponseWriter writer = context.getResponseWriter();
 		String divId = dygraph.getClientId(context);
+		/*
+		 * create Dygraph div element
+		 */
 		writer.startElement("div", dygraph);
 		writer.writeAttribute("id", divId, null);
 		writer.endElement("div");
 		
+		/*
+		 * get Dygraph attributes
+		 */
 		String dygraphAttributes = getDygraphAttribures(dygraph);
 		
+		/*
+		 * start Dygraph creation inside <script> tag
+		 */
 		writer.startElement("script", dygraph);
 		writer.writeAttribute("type", "text/javascript", null);
-		StringBuilder graphBuilder = new StringBuilder("new Dygraph(");
+		Map<String,Object> attr = dygraph.getAttributes();
+		String graphJSVar = (String) attr.get("var");
+		/*
+		 * assign Dygraph object to javascript variable defined with 'var' attribute
+		 */
+		StringBuilder graphBuilder = new StringBuilder((graphJSVar!=null?("var "+graphJSVar+"="):(""))+"new Dygraph(");
 		graphBuilder.append("document.getElementById(\"").append(divId).append("\"),");
+		/*
+		 * get Dygraph data defined with either value or model attribute
+		 */
 		StringBuilder data = getDyGraphData(dygraph);
 		graphBuilder.append(data.toString());
-		//graphBuilder.append("{");
+		/*
+		 * append graph attributes to Dygraph
+		 */
 		graphBuilder.append(dygraphAttributes);
-		//graphBuilder.append("labels: [ 'x', 'A', 'B' ]");
-		//graphBuilder.append("}");
 		graphBuilder.append(")");
+		/*
+		 * write all Dygraph script to response
+		 */
 		writer.write(graphBuilder.toString());
 		writer.endElement("script");
 		
 		
 	}
 
+	/**
+	 * 
+	 * @param dygraph
+	 * @return parsed Dygraph data
+	 */
 	private StringBuilder getDyGraphData(Dygraph dygraph) {
 		Object dataModel= dygraph.getDyDataModel();
 		Map<Object,List<Number>> seriesMap = new HashMap<Object, List<Number>>();
@@ -158,8 +183,14 @@ public class DygraphRenderer extends Renderer {
 				data.append(list).append(",");
 			}
 		}else if(dataModel instanceof List){
+			/*
+			 * Single Dygraph series with a List<DyPoint>
+			 */
 			List<DyPoint> points = (List<DyPoint>) dataModel;
 			if(points != null && !points.isEmpty()){
+				/*
+				 * sorted on X axis ascending
+				 */
 				Collections.sort(points);
 				for (Point point : points) {
 					if(point.getxValue() instanceof Date){
@@ -177,6 +208,11 @@ public class DygraphRenderer extends Renderer {
 		return data;
 	}
 
+	/**
+	 * 
+	 * @param dygraph
+	 * @return Json string of Dygraph attributes
+	 */
 	private String getDygraphAttribures(Dygraph dygraph) {
 		Map<String,Object> attr = dygraph.getAttributes();
 		Gson gson = new Gson();

@@ -14,6 +14,11 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 		return COMPONENT_FAMILY;
 	}
 
+
+	/**
+	 * 
+	 * @return dataset with either value or model
+	 */
 	public Object getDyDataModel() {
 		try {
 			Object value = getValue();
