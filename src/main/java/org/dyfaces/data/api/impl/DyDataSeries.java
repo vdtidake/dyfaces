@@ -40,7 +40,12 @@ public class DyDataSeries implements Serializable,DataSeries{
 		return annotations;
 	}
 
-	public void setAnnotations(List<AnnotationPoint> annotations) {
+	public void addAnnotations(List<AnnotationPoint> annotations) {
+		if (annotations != null) {
+			for (AnnotationPoint annotationPoint : annotations) {
+				annotationPoint.setSeries(series);
+			}
+		}
 		this.annotations = annotations;
 	}
 

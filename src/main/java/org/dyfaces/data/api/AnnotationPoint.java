@@ -5,7 +5,6 @@ public class AnnotationPoint {
 	private Object x;
 	private String shortText;
 	private String text;
-	
     private String icon;
     private Integer width;
     private Integer height;
@@ -13,10 +12,8 @@ public class AnnotationPoint {
     private String cssClass;
     private Boolean attachAtBottom;
     
-	public AnnotationPoint(String series, Object x, String shortText,
-			String text) {
+	public AnnotationPoint(Object x, String shortText,String text) {
 		super();
-		this.series = series;
 		this.x = x;
 		this.shortText = shortText;
 		this.text = text;

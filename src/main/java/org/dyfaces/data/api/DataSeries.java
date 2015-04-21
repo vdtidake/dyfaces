@@ -13,6 +13,6 @@ public interface DataSeries {
 	
 	public List<AnnotationPoint> getAnnotations();
 
-	public void setAnnotations(List<AnnotationPoint> annotations);
+	public void addAnnotations(List<AnnotationPoint> annotations);
 	
 }
