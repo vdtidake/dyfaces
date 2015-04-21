@@ -8,6 +8,10 @@ import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.Point;
 
 public class DyDataSeries implements Serializable,DataSeries{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3363178368797531823L;
 	private String series;
 	private List<Point> dataPoints;
 	

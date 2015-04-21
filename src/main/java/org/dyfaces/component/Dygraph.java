@@ -25,6 +25,10 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			if(value != null){
 				return value;
 			}
+			Object series = this.getStateHelper().eval("series",null);
+			if(series != null){
+				return series;
+			}
 			return this.getStateHelper().eval("model",null);
 		} catch (Exception e) {
 			e.printStackTrace();

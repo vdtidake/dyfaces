@@ -6,6 +6,10 @@ import java.util.Date;
 import org.dyfaces.data.api.Point;
 
 public class DyPoint implements Serializable,Point,Comparable<Point>{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2488662326846611211L;
 	/*
 	 * Date or Number type
 	 */

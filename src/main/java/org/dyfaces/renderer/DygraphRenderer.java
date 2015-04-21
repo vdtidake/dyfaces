@@ -26,6 +26,7 @@ import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.impl.DyDataModel;
+import org.dyfaces.data.api.impl.DyDataSeries;
 import org.dyfaces.data.api.impl.DyPoint;
 import org.dyfaces.utils.DyUtils;
 
@@ -230,7 +231,7 @@ public class DygraphRenderer extends Renderer {
 			/*
 			 * Single Dygraph series with a List<DyPoint>
 			 */
-			List<DyPoint> points = (List<DyPoint>) dataModel;
+			List<Point> points = (List<Point>) dataModel;
 			if(points != null && !points.isEmpty()){
 				/*
 				 * sorted on X axis ascending
@@ -243,6 +244,30 @@ public class DygraphRenderer extends Renderer {
 						data.append(Arrays.asList(point.getxValue(),point.getyValue())).append(",");
 					}
 					
+				}
+			}
+			
+		}else if(dataModel instanceof DataSeries){
+			DataSeries dataseries = (DataSeries) dataModel;
+			List<String> seriesLabels = new ArrayList<String>(dataseries.getDataPoints().size());
+			seriesLabels.add("");
+			if(dataseries != null){
+				String name = dataseries.getSeries();
+				if(name != null && !name.isEmpty()){
+					seriesLabels.add(name);
+				}
+				List<Point> points = dataseries.getDataPoints();
+				Collections.sort(points);
+				for (Point point : points) {
+					if(point.getxValue() instanceof Date){
+						data.append(Arrays.asList(DyUtils.getJSDyDate(point.getxValue()),point.getyValue())).append(",");
+					}else{
+						data.append(Arrays.asList(point.getxValue(),point.getyValue())).append(",");
+					}
+					
+				}
+				if(!seriesLabels.isEmpty()){
+					datamodelAttributes.put("labels", seriesLabels);
 				}
 			}
 			
