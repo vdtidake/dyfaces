@@ -51,9 +51,9 @@ public class DyPoint implements Serializable,Point,Comparable<Point>{
 			Number no1 = (Number) index1;
 			Number no2 = (Number) index2;
 			
-			if (no1.doubleValue() > no2.doubleValue()) {
+			if (no1.doubleValue() < no2.doubleValue()) {
 				return 1;
-			} else if (no1.doubleValue() < no2.doubleValue()) {
+			} else if (no1.doubleValue() > no2.doubleValue()) {
 				return -1;
 			} else {
 				return 0;

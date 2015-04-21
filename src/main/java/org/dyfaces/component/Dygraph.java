@@ -2,9 +2,13 @@ package org.dyfaces.component;
 
 import java.util.List;
 
+import javax.el.ELContext;
+import javax.el.ValueExpression;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIOutput;
 import javax.faces.component.behavior.ClientBehaviorHolder;
+
+import org.dyfaces.data.api.AnnotationPoint;
 
 @FacesComponent(value=Dygraph.COMPONENT_TYPE)
 public class Dygraph extends UIOutput implements ClientBehaviorHolder {
@@ -50,7 +54,17 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
     }*/
 
 
-	public List<Object> getAnnotations() {
-		return (List<Object>) this.getStateHelper().eval("annotations",null);
+	public List<AnnotationPoint> getAnnotations() {
+		return (List<AnnotationPoint>) this.getStateHelper().eval("annotations",null);
 	}
+	
+	public void setAnnotations(List<AnnotationPoint> value) {
+        this.getStateHelper().put("annotations", value);
+        ValueExpression valueExpression = getValueExpression("annotations");
+
+        if (valueExpression != null) {
+            ELContext elContext = this.getFacesContext().getELContext();
+            valueExpression.setValue(elContext, value);
+        }
+    }
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.Point;
 
@@ -14,7 +15,7 @@ public class DyDataSeries implements Serializable,DataSeries{
 	private static final long serialVersionUID = 3363178368797531823L;
 	private String series;
 	private List<Point> dataPoints;
-	private List<Object> annotations;
+	private List<AnnotationPoint> annotations;
 	
 	public DyDataSeries(){
 		dataPoints = new LinkedList<Point>();
@@ -35,14 +36,12 @@ public class DyDataSeries implements Serializable,DataSeries{
 		dataPoints.add(dyPoint);
 	}
 
-	public List<Object> getAnnotations() {
+	public List<AnnotationPoint> getAnnotations() {
 		return annotations;
 	}
 
-	public void setAnnotations(List<Object> annotations) {
+	public void setAnnotations(List<AnnotationPoint> annotations) {
 		this.annotations = annotations;
 	}
-	
-	
-	
+
 }

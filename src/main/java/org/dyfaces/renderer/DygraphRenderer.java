@@ -18,17 +18,15 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.render.FacesRenderer;
 import javax.faces.render.Renderer;
 
-import org.dyfaces.DyAnnoAttributes;
 import org.dyfaces.DyAttributes;
 import org.dyfaces.DyCallbacks;
 import org.dyfaces.Version;
 import org.dyfaces.component.Dygraph;
+import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.impl.DyDataModel;
-import org.dyfaces.data.api.impl.DyDataSeries;
-import org.dyfaces.data.api.impl.DyPoint;
 import org.dyfaces.utils.DyUtils;
 
 import com.google.gson.Gson;
@@ -121,7 +119,7 @@ public class DygraphRenderer extends Renderer {
 		/*
 		 *Add annotations if exists 
 		 */
-		List<Object> annotations =  dygraph.getAnnotations();
+		List<AnnotationPoint> annotations =  dygraph.getAnnotations();
 		if(annotations != null && !annotations.isEmpty()){
 			addDyAnnotations(context,graphJSVar,dygraph);
 		}
@@ -146,18 +144,10 @@ public class DygraphRenderer extends Renderer {
 		
 		ResponseWriter writer = context.getResponseWriter();
 		
-		List<Object> annotations =  dygraph.getAnnotations();
+		List<AnnotationPoint> annotations =  dygraph.getAnnotations();
 		
-		List<DyAnnoAttributes> dyAnnotations = new ArrayList<DyAnnoAttributes>();
-		
-		for (Object object : annotations) {
-			if(object instanceof Number){
-				Number no = (Number) object;
-				dyAnnotations.add(new DyAnnoAttributes("Hot Beverages",no,"X","X"));
-			}
-		}
 		StringBuilder graphBuilder = new StringBuilder("var annotations = ");
-		graphBuilder.append(gson.toJson(dyAnnotations)).append(";");
+		graphBuilder.append(gson.toJson(annotations)).append(";");
 		graphBuilder.append(graphJSVar).append(".setAnnotations(annotations);");
 		writer.write(graphBuilder.toString());
 		
@@ -299,6 +289,11 @@ public class DygraphRenderer extends Renderer {
 				}
 				if(!seriesLabels.isEmpty()){
 					datamodelAttributes.put("labels", seriesLabels);
+				}
+				
+				List<AnnotationPoint> annotationPoints = dataseries.getAnnotations();
+				if(annotationPoints != null && !annotationPoints.isEmpty()){
+					dygraph.setAnnotations(annotationPoints);
 				}
 			}
 			

@@ -11,8 +11,8 @@ public interface DataSeries {
 
 	public void addDataPoint(Point point);
 	
-	public List<Object> getAnnotations();
+	public List<AnnotationPoint> getAnnotations();
 
-	public void setAnnotations(List<Object> annotations);
+	public void setAnnotations(List<AnnotationPoint> annotations);
 	
 }
