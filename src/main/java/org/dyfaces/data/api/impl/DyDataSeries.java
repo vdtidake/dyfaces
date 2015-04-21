@@ -14,6 +14,7 @@ public class DyDataSeries implements Serializable,DataSeries{
 	private static final long serialVersionUID = 3363178368797531823L;
 	private String series;
 	private List<Point> dataPoints;
+	private List<Object> annotations;
 	
 	public DyDataSeries(){
 		dataPoints = new LinkedList<Point>();
@@ -33,6 +34,15 @@ public class DyDataSeries implements Serializable,DataSeries{
 	public void addDataPoint(Point dyPoint){
 		dataPoints.add(dyPoint);
 	}
+
+	public List<Object> getAnnotations() {
+		return annotations;
+	}
+
+	public void setAnnotations(List<Object> annotations) {
+		this.annotations = annotations;
+	}
+	
 	
 	
 }

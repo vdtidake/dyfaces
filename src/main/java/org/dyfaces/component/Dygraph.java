@@ -1,5 +1,7 @@
 package org.dyfaces.component;
 
+import java.util.List;
+
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIOutput;
 import javax.faces.component.behavior.ClientBehaviorHolder;
@@ -46,4 +48,9 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
             f.setValue(elContext, value);
         }
     }*/
+
+
+	public List<Object> getAnnotations() {
+		return (List<Object>) this.getStateHelper().eval("annotations",null);
+	}
 }

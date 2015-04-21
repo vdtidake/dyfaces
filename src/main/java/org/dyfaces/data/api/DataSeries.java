@@ -2,8 +2,6 @@ package org.dyfaces.data.api;
 
 import java.util.List;
 
-import org.dyfaces.data.api.impl.DyPoint;
-
 public interface DataSeries {
 	public String getSeries();
 
@@ -11,5 +9,10 @@ public interface DataSeries {
 
 	public List<Point> getDataPoints();
 
-	public void addDataPoint(Point dyPoint);
+	public void addDataPoint(Point point);
+	
+	public List<Object> getAnnotations();
+
+	public void setAnnotations(List<Object> annotations);
+	
 }

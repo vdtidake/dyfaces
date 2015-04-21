@@ -18,6 +18,7 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.render.FacesRenderer;
 import javax.faces.render.Renderer;
 
+import org.dyfaces.DyAnnoAttributes;
 import org.dyfaces.DyAttributes;
 import org.dyfaces.DyCallbacks;
 import org.dyfaces.Version;
@@ -117,6 +118,14 @@ public class DygraphRenderer extends Renderer {
 		 *Dygraph callback options 
 		 */
 		bindDyCallbacks(context,graphJSVar,dygraph);
+		/*
+		 *Add annotations if exists 
+		 */
+		List<Object> annotations =  dygraph.getAnnotations();
+		if(annotations != null && !annotations.isEmpty()){
+			addDyAnnotations(context,graphJSVar,dygraph);
+		}
+		
 		writer.endElement("script");
 		
 		
@@ -124,12 +133,34 @@ public class DygraphRenderer extends Renderer {
 
 	private void bindDyCallbacks(FacesContext context,String graphJSVar,Dygraph dygraph) throws IOException {
 		String callbacks = getDygraphCallbacks(dygraph);
-		if(callbacks != null){
+		if(callbacks != null && !"{}".equals(callbacks)){
 			ResponseWriter writer = context.getResponseWriter();
 			StringBuilder graphBuilder = new StringBuilder();
-			graphBuilder.append(graphJSVar).append(".updateOptions(").append(callbacks).append(")");
+			graphBuilder.append(graphJSVar).append(".updateOptions(").append(callbacks).append(");");
 			writer.write(graphBuilder.toString());
 		}
+	}
+	
+	private void addDyAnnotations(FacesContext context, String graphJSVar,
+			Dygraph dygraph) throws IOException {
+		
+		ResponseWriter writer = context.getResponseWriter();
+		
+		List<Object> annotations =  dygraph.getAnnotations();
+		
+		List<DyAnnoAttributes> dyAnnotations = new ArrayList<DyAnnoAttributes>();
+		
+		for (Object object : annotations) {
+			if(object instanceof Number){
+				Number no = (Number) object;
+				dyAnnotations.add(new DyAnnoAttributes("Hot Beverages",no,"X","X"));
+			}
+		}
+		StringBuilder graphBuilder = new StringBuilder("var annotations = ");
+		graphBuilder.append(gson.toJson(dyAnnotations)).append(";");
+		graphBuilder.append(graphJSVar).append(".setAnnotations(annotations);");
+		writer.write(graphBuilder.toString());
+		
 	}
 
 	/**
