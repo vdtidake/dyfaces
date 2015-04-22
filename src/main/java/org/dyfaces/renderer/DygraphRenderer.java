@@ -25,6 +25,7 @@ import org.dyfaces.component.Dygraph;
 import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
+import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.impl.DyDataModel;
 import org.dyfaces.utils.DyUtils;
@@ -36,11 +37,12 @@ import com.google.gson.GsonBuilder;
 @ResourceDependencies({
 		@ResourceDependency(name = "jsf.js", target = "head", library = "javax.faces"),
 		@ResourceDependency(library = "webjars", name = Version.DYGRAPH_RESOURCES
-				+ "/dygraph-combined.js"),
+				+ "/dygraph-combined.js", target = "head"),
 		@ResourceDependency(library = "webjars", name = Version.DYGRAPH_RESOURCES
-				+ "/dygraph-interaction-model.js"),
+				+ "/dygraph-interaction-model.js", target = "head"),
 		@ResourceDependency(library = "webjars", name = Version.UNDERSCORE_RESOURCES
-				+ "/underscore-min.js") })
+				+ "/underscore-min.js", target = "head"), 
+		@ResourceDependency(library = "dyfaces", name = "js/dyfaces.js")})
 public class DygraphRenderer extends Renderer {
 	public static final String RENDERER_TYPE = "org.dyfaces.component.graph.renderer";
 	private static final Gson gson = new Gson();
@@ -131,10 +133,19 @@ public class DygraphRenderer extends Renderer {
 
 	private void bindDyCallbacks(FacesContext context,String graphJSVar,Dygraph dygraph) throws IOException {
 		String callbacks = getDygraphCallbacks(dygraph);
+		ResponseWriter writer = context.getResponseWriter();
+		StringBuilder graphBuilder = new StringBuilder();
 		if(callbacks != null && !"{}".equals(callbacks)){
-			ResponseWriter writer = context.getResponseWriter();
-			StringBuilder graphBuilder = new StringBuilder();
 			graphBuilder.append(graphJSVar).append(".updateOptions(").append(callbacks).append(");");
+			writer.write(graphBuilder.toString());
+		}
+		graphBuilder = new StringBuilder();
+		
+		List<HighlightRegion> highlightRegions = dygraph.getHghlightRegions();
+		if(highlightRegions != null && !highlightRegions.isEmpty()){
+			String hData = gson.toJson(highlightRegions);
+			graphBuilder.append("var hd=").append(hData).append(";");
+			graphBuilder.append(graphJSVar).append(".updateOptions(").append("{underlayCallback : dyhighlightRegion(hd)}").append(");");
 			writer.write(graphBuilder.toString());
 		}
 	}
@@ -294,6 +305,10 @@ public class DygraphRenderer extends Renderer {
 				List<AnnotationPoint> annotationPoints = dataseries.getAnnotations();
 				if(annotationPoints != null && !annotationPoints.isEmpty()){
 					dygraph.setAnnotations(annotationPoints);
+				}
+				List<HighlightRegion> highlightRegions = dataseries.getHighlightRegions();
+				if(highlightRegions != null && !highlightRegions.isEmpty()){
+					dygraph.setHighlightRegions(highlightRegions);
 				}
 			}
 			

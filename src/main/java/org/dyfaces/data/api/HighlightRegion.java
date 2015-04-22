@@ -5,6 +5,7 @@ import java.util.Date;
 public class HighlightRegion implements Comparable<HighlightRegion>{
 	private Object minX;
 	private Object maxX;
+	private String hexColor="#FFFF66";
 	
 	
 	public HighlightRegion(Object minX, Object maxX) {
@@ -78,6 +79,13 @@ public class HighlightRegion implements Comparable<HighlightRegion>{
 		return false;
 			
 	}
-	
+
+	public String getHexColor() {
+		return hexColor;
+	}
+
+	public void setHexColor(String hexColor) {
+		this.hexColor = hexColor;
+	}
 	
 }

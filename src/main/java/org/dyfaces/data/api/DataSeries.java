@@ -15,4 +15,8 @@ public interface DataSeries {
 
 	public void addAnnotations(List<AnnotationPoint> annotations);
 	
+	public List<HighlightRegion> getHighlightRegions();
+
+	public void addHighlightRegions(List<HighlightRegion> highlightRegions);
+	
 }
