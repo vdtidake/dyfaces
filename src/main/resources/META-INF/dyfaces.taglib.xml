@@ -170,6 +170,11 @@
 			<required>false</required>
 			<type>java.lang.Object</type>
 		</attribute>
+		 <attribute>
+			<name>highlightRegions</name>
+			<required>false</required>
+			<type>java.lang.Object</type>
+		</attribute>
 	</tag>
 </facelet-taglib>
     

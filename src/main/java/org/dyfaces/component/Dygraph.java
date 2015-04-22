@@ -9,6 +9,7 @@ import javax.faces.component.UIOutput;
 import javax.faces.component.behavior.ClientBehaviorHolder;
 
 import org.dyfaces.data.api.AnnotationPoint;
+import org.dyfaces.data.api.HighlightRegion;
 
 @FacesComponent(value=Dygraph.COMPONENT_TYPE)
 public class Dygraph extends UIOutput implements ClientBehaviorHolder {
@@ -67,4 +68,21 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
             valueExpression.setValue(elContext, value);
         }
     }
+	
+
+	public List<HighlightRegion> getHghlightRegions() {
+		return (List<HighlightRegion>) this.getStateHelper().eval("highlightRegions",null);
+	}
+	
+	public void setHighlightRegions(List<HighlightRegion> value) {
+        this.getStateHelper().put("highlightRegions", value);
+        ValueExpression valueExpression = getValueExpression("highlightRegions");
+
+        if (valueExpression != null) {
+            ELContext elContext = this.getFacesContext().getELContext();
+            valueExpression.setValue(elContext, value);
+        }
+    }
+
+	
 }

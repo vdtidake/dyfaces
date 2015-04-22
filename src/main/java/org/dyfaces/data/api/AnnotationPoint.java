@@ -1,6 +1,12 @@
 package org.dyfaces.data.api;
 
-public class AnnotationPoint {
+import java.io.Serializable;
+
+public class AnnotationPoint implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4439349984729280824L;
 	private String series;
 	private Object x;
 	private String shortText;

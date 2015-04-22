@@ -1,11 +1,13 @@
 package org.dyfaces.data.api.impl;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.DataSeries;
+import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.Point;
 
 public class DyDataSeries implements Serializable,DataSeries{
@@ -16,6 +18,7 @@ public class DyDataSeries implements Serializable,DataSeries{
 	private String series;
 	private List<Point> dataPoints;
 	private List<AnnotationPoint> annotations;
+	private List<HighlightRegion> highlightRegions;
 	
 	public DyDataSeries(){
 		dataPoints = new LinkedList<Point>();
@@ -49,4 +52,22 @@ public class DyDataSeries implements Serializable,DataSeries{
 		this.annotations = annotations;
 	}
 
+	public List<HighlightRegion> getHighlightRegions() {
+		return highlightRegions;
+	}
+
+	public void addHighlightRegions(List<HighlightRegion> highlightRegions) {
+		if (highlightRegions != null) {
+			for (HighlightRegion region : highlightRegions) {
+				if(!region.validate()){
+					//TODO Throw custom exception here
+				}
+			}
+			Collections.sort(highlightRegions);
+		}
+		
+		this.highlightRegions = highlightRegions;
+	}
+
+	
 }
