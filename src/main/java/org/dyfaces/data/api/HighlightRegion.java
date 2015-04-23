@@ -2,6 +2,8 @@ package org.dyfaces.data.api;
 
 import java.util.Date;
 
+import org.dyfaces.DyConstants;
+
 public class HighlightRegion implements Comparable<HighlightRegion>{
 	private Object minX;
 	private Object maxX;
@@ -10,21 +12,21 @@ public class HighlightRegion implements Comparable<HighlightRegion>{
 	
 	public HighlightRegion(Object minX, Object maxX) {
 		super();
-		this.minX = minX;
-		this.maxX = maxX;
+		this.minX = minX instanceof Date?DyConstants.dateFormat.format(minX):minX;
+		this.maxX = maxX instanceof Date?DyConstants.dateFormat.format(maxX):maxX;
 	}
 	
 	public Object getMinX() {
 		return minX;
 	}
 	public void setMinX(Object minX) {
-		this.minX = minX;
+		this.minX = minX instanceof Date?DyConstants.dateFormat.format(minX):minX;
 	}
 	public Object getMaxX() {
 		return maxX;
 	}
 	public void setMaxX(Object maxX) {
-		this.maxX = maxX;
+		this.maxX = maxX instanceof Date?DyConstants.dateFormat.format(maxX):maxX;
 	}
 
 	@Override

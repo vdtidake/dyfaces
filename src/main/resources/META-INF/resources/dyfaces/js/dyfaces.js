@@ -2,13 +2,25 @@
  * 
  */
 
-var dyhighlightRegion = function(data) {
+var dyhighlightRegion = function(data,userCallback) {
 	console.log('highlight data '+JSON.stringify(data))
 	
     return function(canvas, area, g) {
 		_.each(data, function(d,i){
-			highlightRegionHelper(canvas, area, g, d.minX, d.maxX, d.hexColor);
+			var min = moment(d.minX, ["YYYY/MM/DD hh:mm:ss"], true);
+			var max = moment(d.maxX, ["YYYY/MM/DD hh:mm:ss"], true);
+			
+			if(min.isValid() && max.isValid()){
+				highlightRegionHelper(canvas, area, g, min, max, d.hexColor);
+			}else{
+				highlightRegionHelper(canvas, area, g, d.minX, d.maxX, d.hexColor);
+			}
+			
 		});
+		if(userCallback != ''){
+			var funcCall = userCallback + "(canvas, area, g);";
+			eval(funcCall);
+		}
     }
 };
 

@@ -42,6 +42,8 @@ import com.google.gson.GsonBuilder;
 				+ "/dygraph-interaction-model.js", target = "head"),
 		@ResourceDependency(library = "webjars", name = Version.UNDERSCORE_RESOURCES
 				+ "/underscore-min.js", target = "head"), 
+		@ResourceDependency(library = "webjars", name = Version.MOMENT_RESOURCES
+				+ "/moment.js", target = "head"),
 		@ResourceDependency(library = "dyfaces", name = "js/dyfaces.js")})
 public class DygraphRenderer extends Renderer {
 	public static final String RENDERER_TYPE = "org.dyfaces.component.graph.renderer";
@@ -145,7 +147,13 @@ public class DygraphRenderer extends Renderer {
 		if(highlightRegions != null && !highlightRegions.isEmpty()){
 			String hData = gson.toJson(highlightRegions);
 			graphBuilder.append("var hd=").append(hData).append(";");
-			graphBuilder.append(graphJSVar).append(".updateOptions(").append("{underlayCallback : dyhighlightRegion(hd)}").append(");");
+			 Map<String,String> callBackMap = gson.fromJson(callbacks, Map.class);
+			 String dyunderlayCallback = "''";
+			 if(callBackMap.containsKey("underlayCallback")){
+				 dyunderlayCallback = "'"+callBackMap.get("underlayCallback")+"'";
+			 }
+			
+			graphBuilder.append(graphJSVar).append(".updateOptions(").append("{underlayCallback : dyhighlightRegion(hd,"+dyunderlayCallback+")}").append(");");
 			writer.write(graphBuilder.toString());
 		}
 	}
