@@ -44,7 +44,8 @@ import com.google.gson.GsonBuilder;
 				+ "/underscore-min.js", target = "head"), 
 		@ResourceDependency(library = "webjars", name = Version.MOMENT_RESOURCES
 				+ "/moment.js", target = "head"),
-		@ResourceDependency(library = "dyfaces", name = "js/dyfaces.js")})
+		@ResourceDependency(library = "dyfaces", name = "js/dyfaces.js"),
+		@ResourceDependency(library = "dygraph", name = "synchronizer.js")})
 public class DygraphRenderer extends Renderer {
 	public static final String RENDERER_TYPE = "org.dyfaces.component.graph.renderer";
 	private static final Gson gson = new Gson();
@@ -127,7 +128,10 @@ public class DygraphRenderer extends Renderer {
 		if(annotations != null && !annotations.isEmpty()){
 			addDyAnnotations(context,graphJSVar,dygraph);
 		}
-		
+		String  sync= dygraph.getSynchronize();
+		if(sync != null && !sync.isEmpty()){
+			syncDygraphs(sync,context,graphJSVar);
+		}
 		writer.endElement("script");
 		
 		
@@ -365,4 +369,16 @@ public class DygraphRenderer extends Renderer {
 		DyCallbacks attributes = builder.create().fromJson(gson.toJson(attr), DyCallbacks.class);
 		return gson.toJson(attributes).replaceAll("\"", "");
 	}
+	
+
+	private void syncDygraphs(String sync,FacesContext context,String dygraph) throws IOException {
+		ResponseWriter writer = context.getResponseWriter();
+		sync=sync+","+dygraph;
+		String[] graphs = sync.split(",");
+		StringBuilder graphBuilder = new StringBuilder("var sgs = ");
+		graphBuilder.append(Arrays.toString(graphs)).append(";");
+		graphBuilder.append("var sync = Dygraph.synchronize(sgs,{ selection: false, zoom: true})").append(";");
+		writer.write(graphBuilder.toString());
+	}
+
 }

@@ -84,5 +84,18 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
         }
     }
 
+	public String getSynchronize() {
+		return (String) this.getStateHelper().eval("synchronize",null);
+	}
+	public void setSynchronize(String value) {
+        this.getStateHelper().put("synchronize", value);
+        ValueExpression valueExpression = getValueExpression("synchronize");
+
+        if (valueExpression != null) {
+            ELContext elContext = this.getFacesContext().getELContext();
+            valueExpression.setValue(elContext, value);
+        }
+    }
+
 	
 }
