@@ -79,12 +79,12 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 	private void dygraphMarkup(FacesContext context, UIComponent component) throws IOException {
 		Dygraph dygraph = (Dygraph) component;
 		ResponseWriter writer = context.getResponseWriter();
-		String divId = dygraph.getClientId(context);
+		String graphJSVar = dygraph.getClientId(context).replace(":", "_dy");
 		/*
 		 * create Dygraph div element
 		 */
 		writer.startElement("div", dygraph);
-		writer.writeAttribute("id", divId, null);
+		writer.writeAttribute("id", graphJSVar, null);
 		writer.endElement("div");
 		
 		
@@ -94,15 +94,16 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		writer.startElement("script", dygraph);
 		writer.writeAttribute("type", "text/javascript", null);
 		Map<String,Object> attr = dygraph.getAttributes();
-		String graphJSVar = (String) attr.get("var");
-		if(graphJSVar == null){
-			graphJSVar=divId;
+		String dyvar = (String) attr.get("var");
+		String dyjsVar = "";
+		if(dyvar != null && !dyvar.isEmpty()){
+			dyjsVar = "var "+dyvar+"=";
 		}
 		/*
 		 * assign Dygraph object to javascript variable defined with 'var' attribute
 		 */
-		StringBuilder graphBuilder = new StringBuilder("var "+graphJSVar+"= new Dygraph(");
-		graphBuilder.append("document.getElementById(\"").append(divId).append("\"),");
+		StringBuilder graphBuilder = new StringBuilder(dyjsVar).append("(function () {var "+graphJSVar+"= new Dygraph(");
+		graphBuilder.append("document.getElementById(\"").append(graphJSVar).append("\"),");
 		/*
 		 * get Dygraph data defined with either value or model attribute
 		 */
@@ -138,6 +139,7 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		if(sync != null && !sync.isEmpty()){
 			syncDygraphs(sync,context,graphJSVar);
 		}
+		writer.write("return "+graphJSVar+"})();");
 		writer.endElement("script");
 		
 		

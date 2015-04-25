@@ -1,5 +1,8 @@
 package org.dyfaces.component;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.el.ELContext;
@@ -15,12 +18,24 @@ import org.dyfaces.data.api.HighlightRegion;
 public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	public static final String COMPONENT_TYPE = "org.dyfaces.component.graph";
 	public static final String COMPONENT_FAMILY = "org.dyfaces.component";
-	
+	private static final String  DEFAULT_EVENT ="select";
+	private static final Collection<String> EVENTS = Collections.unmodifiableCollection(Arrays.asList(DEFAULT_EVENT));
+
 	@Override
 	public String getFamily() {
 		return COMPONENT_FAMILY;
 	}
 
+	
+    @Override
+    public Collection<String> getEventNames() {
+        return EVENTS;
+    }
+
+    @Override
+    public String getDefaultEventName() {
+        return DEFAULT_EVENT;
+    }
 
 	/**
 	 * 
