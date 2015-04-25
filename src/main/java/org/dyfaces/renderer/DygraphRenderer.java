@@ -15,6 +15,11 @@ import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.ComponentSystemEvent;
+import javax.faces.event.ComponentSystemEventListener;
+import javax.faces.event.ListenerFor;
+import javax.faces.event.PostAddToViewEvent;
 import javax.faces.render.FacesRenderer;
 import javax.faces.render.Renderer;
 
@@ -29,6 +34,7 @@ import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.impl.DyDataModel;
 import org.dyfaces.utils.DyUtils;
+import org.dyfaces.utils.DyfacesUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -44,9 +50,9 @@ import com.google.gson.GsonBuilder;
 				+ "/underscore-min.js", target = "head"), 
 		@ResourceDependency(library = "webjars", name = Version.MOMENT_RESOURCES
 				+ "/moment.js", target = "head"),
-		@ResourceDependency(library = "dyfaces", name = "js/dyfaces.js"),
-		@ResourceDependency(library = "dygraph", name = "synchronizer.js")})
-public class DygraphRenderer extends Renderer {
+		@ResourceDependency(library = "dyfaces", name = "js/dyfaces.js")})
+@ListenerFor(systemEventClass = PostAddToViewEvent.class)
+public class DygraphRenderer extends Renderer implements ComponentSystemEventListener{
 	public static final String RENDERER_TYPE = "org.dyfaces.component.graph.renderer";
 	private static final Gson gson = new Gson();
 	private static final GsonBuilder builder = new GsonBuilder();
@@ -379,6 +385,63 @@ public class DygraphRenderer extends Renderer {
 		graphBuilder.append(Arrays.toString(graphs)).append(";");
 		graphBuilder.append("var sync = Dygraph.synchronize(sgs,{ selection: false, zoom: true})").append(";");
 		writer.write(graphBuilder.toString());
+	}
+	
+	private void initTooltip(FacesContext context,String dygraph) throws IOException{
+		ResponseWriter writer = context.getResponseWriter();
+		StringBuilder graphBuilder = new StringBuilder("var tooltip = $('#").append(dygraph).append("').qtip({id: '").append(dygraph).append("',prerender: true,content: ' ',position: {target: 'mouse',viewport: $('#").append(dygraph).append("'),adjust: { x: 5, y: 5 } },    show: false,});");
+		writer.write(graphBuilder.toString());
+	}
+
+	@Override
+	public void processEvent(ComponentSystemEvent event)
+			throws AbortProcessingException {
+		/*
+		 * dynamic resource loading
+		 */
+		if (event instanceof PostAddToViewEvent) {
+            final FacesContext context = FacesContext.getCurrentInstance();
+            addScript(context,event);
+        }
+	}
+
+	private void addScript(FacesContext context,ComponentSystemEvent event) {
+		/*
+		 * check if jquery is required
+		 */
+		Dygraph dygraph = (Dygraph) event.getSource();
+		
+		UIComponent head = context.getViewRoot().getFacet("javax_faces_location_HEAD");
+        if (head == null) {
+            return;
+        }
+        boolean jqueryAdded = true;
+        for (UIComponent c : head.getChildren()) {
+            if (c.getAttributes().get("name").toString().endsWith("jquery.js")) {
+            	jqueryAdded = false;
+            }
+        }
+        if (jqueryAdded) {
+            DyfacesUtils.addScriptResource(context, "dyfaces-jquery", Version.JQUERY_RESOURCES+"/jquery.min.js");
+        }
+        boolean addQtip = false;
+        if(dygraph.isTooltip() != null && dygraph.isTooltip() == true){
+        	addQtip = true;
+        }
+        
+        if(addQtip){
+            DyfacesUtils.addStyleResource(context, "dyfaces-qtip2css", Version.QTIP2_RESOURCES+"/jquery.qtip.min.css");
+            DyfacesUtils.addScriptResource(context, "dyfaces-qtip2js", Version.QTIP2_RESOURCES+"/jquery.qtip.min.js");
+        }
+        
+        boolean addSyncjs = false;
+        if(dygraph.getSynchronize() != null && !dygraph.getSynchronize().isEmpty()){
+        	addSyncjs = true;
+        }
+        
+        if(addSyncjs){
+            DyfacesUtils.addScriptResource(context, "dyfaces-sync", "synchronizer.js","dygraph");
+        }
 	}
 
 }

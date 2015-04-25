@@ -32,70 +32,69 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			if(value != null){
 				return value;
 			}
-			Object series = this.getStateHelper().eval("series",null);
+			Object series = getValue("series");
 			if(series != null){
 				return series;
 			}
-			return this.getStateHelper().eval("model",null);
+			return  getValue("model");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	/*public void setDyDataModel(Object value) {
-        this.getStateHelper().put("model", value);
-        ValueExpression f = getValueExpression("model");
-
-        if (f != null) {
-
-            ELContext elContext = this.getFacesContext().getELContext();
-
-            f.setValue(elContext, value);
-        }
-    }*/
-
 
 	public List<AnnotationPoint> getAnnotations() {
-		return (List<AnnotationPoint>) this.getStateHelper().eval("annotations",null);
+		return (List<AnnotationPoint>)getValue("annotations");
 	}
 	
 	public void setAnnotations(List<AnnotationPoint> value) {
-        this.getStateHelper().put("annotations", value);
-        ValueExpression valueExpression = getValueExpression("annotations");
-
-        if (valueExpression != null) {
-            ELContext elContext = this.getFacesContext().getELContext();
-            valueExpression.setValue(elContext, value);
-        }
+		setValue("annotations",value);
     }
 	
 
 	public List<HighlightRegion> getHghlightRegions() {
-		return (List<HighlightRegion>) this.getStateHelper().eval("highlightRegions",null);
+		return (List<HighlightRegion>) getValue("highlightRegions");
 	}
 	
 	public void setHighlightRegions(List<HighlightRegion> value) {
-        this.getStateHelper().put("highlightRegions", value);
-        ValueExpression valueExpression = getValueExpression("highlightRegions");
-
-        if (valueExpression != null) {
-            ELContext elContext = this.getFacesContext().getELContext();
-            valueExpression.setValue(elContext, value);
-        }
+		setValue("highlightRegions",value);
     }
 
 	public String getSynchronize() {
-		return (String) this.getStateHelper().eval("synchronize",null);
+		return (String) getValue("synchronize");
 	}
 	public void setSynchronize(String value) {
-        this.getStateHelper().put("synchronize", value);
-        ValueExpression valueExpression = getValueExpression("synchronize");
+		setValue("synchronize",value);
+    }
+	
+	public Boolean isTooltip() {
+		return (Boolean) getValue("tooltip");
+	}
+	public void setTooltip(Boolean value) {
+		setValue("tooltip",value);
+    }
+
+	/**
+	 * 
+	 * @param param
+	 * @return value of param
+	 */
+	public Object getValue(String param) {
+		return this.getStateHelper().eval(param,null);
+	}
+	/**
+	 * 
+	 * @param param
+	 * @param value
+	 */
+	public void setValue(String param,Object value) {
+        this.getStateHelper().put(param, value);
+        ValueExpression valueExpression = getValueExpression(param);
 
         if (valueExpression != null) {
             ELContext elContext = this.getFacesContext().getELContext();
             valueExpression.setValue(elContext, value);
         }
     }
-
 	
 }
