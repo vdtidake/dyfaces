@@ -123,6 +123,7 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	 public void encodeBegin(FacesContext context) throws IOException {
 		 	ResponseWriter writer = context.getResponseWriter();
 		 	String graphJSVar = this.getClientId(context).replace(":", "_dy");
+		 	String parentvar = getParent().getClientId(context).replace(":", "_dy");
 		 	/*
 			 * create Dygraph div element
 			 */
@@ -131,7 +132,7 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			Map<String,List<ClientBehavior>> behaviors = this.getClientBehaviors();
 			for (String eventName : behaviors.keySet()) {
 			    if (this.getEventNames().contains(eventName)) {
-			    	ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, this, "click", graphJSVar, null);
+			    	ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, this, "click", parentvar, null);
 			    	String click = behaviors.get("click").get(0).getScript(behaviorContext);
 			    	writer.writeAttribute("onclick", click, null);
 			    }
