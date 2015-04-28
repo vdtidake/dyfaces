@@ -1,10 +1,15 @@
 package org.dyfaces.data.api;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.dyfaces.DyConstants;
 
-public class HighlightRegion implements Comparable<HighlightRegion>{
+public class HighlightRegion implements Comparable<HighlightRegion>,Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4057949772485070364L;
 	private Object minX;
 	private Object maxX;
 	private String hexColor="#FFFF66";

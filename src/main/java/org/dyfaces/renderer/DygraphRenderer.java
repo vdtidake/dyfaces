@@ -80,14 +80,7 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		Dygraph dygraph = (Dygraph) component;
 		ResponseWriter writer = context.getResponseWriter();
 		String graphJSVar = dygraph.getClientId(context).replace(":", "_dy");
-		/*
-		 * create Dygraph div element
-		 */
-		writer.startElement("div", dygraph);
-		writer.writeAttribute("id", graphJSVar, null);
-		writer.endElement("div");
-		
-		
+				
 		/*
 		 * start Dygraph creation inside <script> tag
 		 */
