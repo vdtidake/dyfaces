@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.faces.application.ResourceDependencies;
 import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
+import javax.faces.component.behavior.ClientBehaviorContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.event.AbortProcessingException;
@@ -147,18 +148,30 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			writer.write(graphBuilder.toString());
 		}
 		graphBuilder = new StringBuilder();
-		
+		Map<String,String> callBackMap = gson.fromJson(callbacks, Map.class);
 		List<HighlightRegion> highlightRegions = dygraph.getHghlightRegions();
 		if(highlightRegions != null && !highlightRegions.isEmpty()){
 			String hData = gson.toJson(highlightRegions);
 			graphBuilder.append("var hd=").append(hData).append(";");
-			 Map<String,String> callBackMap = gson.fromJson(callbacks, Map.class);
 			 String dyunderlayCallback = "''";
 			 if(callBackMap.containsKey("underlayCallback")){
 				 dyunderlayCallback = "'"+callBackMap.get("underlayCallback")+"'";
 			 }
 			
 			graphBuilder.append(graphJSVar).append(".updateOptions(").append("{underlayCallback : dyhighlightRegion(hd,"+dyunderlayCallback+")}").append(");");
+			writer.write(graphBuilder.toString());
+		}
+		
+		Boolean graphClickedBehavior = dygraph.getClientBehaviors().containsKey("graphClicked");
+		if(graphClickedBehavior){
+			String dyclickCallback = "''";
+			 if(callBackMap.containsKey("clickCallback")){
+				 dyclickCallback = "'"+callBackMap.get("clickCallback")+"'";
+			 }
+			ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.DEFAULT_EVENT, graphJSVar, null);
+		    String click = dygraph.getClientBehaviors().get(Dygraph.DEFAULT_EVENT).get(0).getScript(behaviorContext);
+				
+			graphBuilder.append(graphJSVar).append(".updateOptions(").append("{clickCallback  : dyClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
 			writer.write(graphBuilder.toString());
 		}
 	}

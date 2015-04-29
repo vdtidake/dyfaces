@@ -17,16 +17,21 @@ import javax.faces.component.behavior.ClientBehaviorHolder;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.faces.event.BehaviorEvent;
+import javax.faces.event.FacesEvent;
 
+import org.dyfaces.FacesParam;
 import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.HighlightRegion;
+import org.dyfaces.event.GraphClicked;
 
 @FacesComponent(value=Dygraph.COMPONENT_TYPE)
 public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	public static final String COMPONENT_TYPE = "org.dyfaces.component.graph";
 	public static final String COMPONENT_FAMILY = "org.dyfaces.component";
-	private static final String  DEFAULT_EVENT ="click";
-	private static final Collection<String> EVENTS = Collections.unmodifiableCollection(Arrays.asList(DEFAULT_EVENT));
+	public static final String  DEFAULT_EVENT ="graphClicked";
+	public static final String EVENT_POINTCLICKED = "pointClicked";
+	private static final Collection<String> EVENTS = Collections.unmodifiableCollection(Arrays.asList(DEFAULT_EVENT,EVENT_POINTCLICKED));
 
 	@Override
 	public String getFamily() {
@@ -95,6 +100,18 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	public void setTooltip(Boolean value) {
 		setValue("tooltip",value);
     }
+	public String getSelectedPoint() {
+		return (String) getValue("selectedPoint");
+	}
+	public void setSelectedPoint(String value) {
+		setValue("selectedPoint",value);
+    }
+	public String getClickCoordinate() {
+		return (String) getValue("clickCoordinate");
+	}
+	public void setClickCoordinate(String value) {
+		setValue("clickCoordinate",value);
+    }
 
 	/**
 	 * 
@@ -123,21 +140,27 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	 public void encodeBegin(FacesContext context) throws IOException {
 		 	ResponseWriter writer = context.getResponseWriter();
 		 	String graphJSVar = this.getClientId(context).replace(":", "_dy");
-		 	String parentvar = getParent().getClientId(context).replace(":", "_dy");
 		 	/*
 			 * create Dygraph div element
 			 */
 			writer.startElement("div", this);
 			writer.writeAttribute("id", graphJSVar, null);
-			Map<String,List<ClientBehavior>> behaviors = this.getClientBehaviors();
+			/*Map<String,List<ClientBehavior>> behaviors = this.getClientBehaviors();
 			for (String eventName : behaviors.keySet()) {
 			    if (this.getEventNames().contains(eventName)) {
-			    	ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, this, "click", parentvar, null);
-			    	String click = behaviors.get("click").get(0).getScript(behaviorContext);
+			    	ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, this, DEFAULT_EVENT, graphJSVar, null);
+			    	String click = behaviors.get(DEFAULT_EVENT).get(0).getScript(behaviorContext);
 			    	writer.writeAttribute("onclick", click, null);
 			    }
-			}
+			}*/
 			writer.endElement("div");
+			
+			writer.startElement("input", null);
+			writer.writeAttribute("type", "hidden", null);
+			writer.writeAttribute("id", graphJSVar + "selectedPoint", null);
+			writer.writeAttribute("name", graphJSVar + "selectedPoint", null);
+			writer.writeAttribute("value", getSelectedPoint(), null);
+			writer.endElement("input");
 	 }
 	 @Override
 	 public void decode(FacesContext context) {
@@ -149,19 +172,19 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 
 		ExternalContext external = context.getExternalContext();
 		Map<String, String> params = external.getRequestParameterMap();
-		String behaviorEvent = params.get("javax.faces.behavior.event");
+		String behaviorEvent = params.get(FacesParam.EVENT.getName());
 		if (behaviorEvent != null) {
 			List<ClientBehavior> behaviorsForEvent = behaviors
 					.get(behaviorEvent);
 
 			if (behaviors.size() > 0) {
-				String behaviorSource = params.get("javax.faces.source");
-				String clientId = this.getClientId(context).replace(":", "_dy");
-				if (behaviorSource != null && behaviorSource.equals(clientId)) {
-					for (ClientBehavior behavior : behaviorsForEvent) {
-						behavior.decode(context, this);
-					}
-				}
+				String behaviorSource = params.get(FacesParam.SOURCE.getName());
+				String clientId = getClientId(context);
+                if (behaviorSource != null && behaviorSource.equals(clientId)) {
+                    for (ClientBehavior behavior : behaviorsForEvent) {
+                        behavior.decode(context, this);
+                    }
+                }
 			}
 		}
 	 }
@@ -171,6 +194,23 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	public void encodeChildren(FacesContext context) throws IOException {
 		super.encodeChildren(context);
 	}
+
+
+	@Override
+	public void queueEvent(FacesEvent event) {
+		final FacesContext context = FacesContext.getCurrentInstance();
+		final Map<String, String> params = context.getExternalContext().getRequestParameterMap();
+		final String clientId = getClientId(context);
+		final BehaviorEvent behaviorEvent = (BehaviorEvent) event;
+
+		GraphClicked graphClicked = new GraphClicked(this, behaviorEvent.getBehavior());
+		if(true){
+			super.queueEvent(graphClicked);
+		}else{
+		    super.queueEvent(event);
+		}
+	}
 	 
+	
 	 
 }

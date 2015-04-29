@@ -34,3 +34,17 @@ function highlightRegionHelper(canvas, area, g, start, end, fill) {
 	canvas.fillStyle = fill;
 	canvas.fillRect(left, area.y, right - left, area.h);
 }
+var dyClickCallbackFn = function(userCallback,ajaxFn,graphId) {
+	console.log('ajaxFn '+ajaxFn +' graphId '+graphId);
+	 return function(event, x, points) {
+		 $('#'+graphId+'selectedPoint').val(JSON.stringify(points));
+		 if(ajaxFn != ''){
+				eval(ajaxFn);
+		  }
+		 if(userCallback != ''){
+				var funcCall = userCallback + "(event, x, points);";
+				eval(funcCall);
+		 }
+	 }
+	
+}
