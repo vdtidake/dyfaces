@@ -35,9 +35,8 @@ function highlightRegionHelper(canvas, area, g, start, end, fill) {
 	canvas.fillRect(left, area.y, right - left, area.h);
 }
 var dyClickCallbackFn = function(userCallback,ajaxFn,graphId) {
-	console.log('ajaxFn '+ajaxFn +' graphId '+graphId);
 	 return function(event, x, points) {
-		 $('#'+graphId+'selectedPoint').val(JSON.stringify(points));
+		 $('#'+graphId+'closestPoints').val(JSON.stringify(points));
 		 if(ajaxFn != ''){
 				eval(ajaxFn);
 		  }
@@ -46,5 +45,16 @@ var dyClickCallbackFn = function(userCallback,ajaxFn,graphId) {
 				eval(funcCall);
 		 }
 	 }
-	
+}
+var dyPointClickCallbackFn = function(userCallback,ajaxFn,graphId) {
+	 return function(event, point) {
+		 $('#'+graphId+'selectedPoint').val(JSON.stringify(point));
+		 if(ajaxFn != ''){
+				eval(ajaxFn);
+		  }
+		 if(userCallback != ''){
+				var funcCall = userCallback + "(event, point);";
+				eval(funcCall);
+		 }
+	 }
 }

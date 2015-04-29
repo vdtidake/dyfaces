@@ -174,6 +174,19 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			graphBuilder.append(graphJSVar).append(".updateOptions(").append("{clickCallback  : dyClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
 			writer.write(graphBuilder.toString());
 		}
+		
+		Boolean pointClickedBehavior = dygraph.getClientBehaviors().containsKey("pointClicked");
+		if(pointClickedBehavior){
+			String dyclickCallback = "''";
+			 if(callBackMap.containsKey("pointClicked")){
+				 dyclickCallback = "'"+callBackMap.get("pointClicked")+"'";
+			 }
+			ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.EVENT_POINTCLICKED, graphJSVar, null);
+		    String click = dygraph.getClientBehaviors().get(Dygraph.EVENT_POINTCLICKED).get(0).getScript(behaviorContext);
+				
+			graphBuilder.append(graphJSVar).append(".updateOptions(").append("{pointClickCallback : dyPointClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
+			writer.write(graphBuilder.toString());
+		}
 	}
 	
 	private void addDyAnnotations(FacesContext context, String graphJSVar,

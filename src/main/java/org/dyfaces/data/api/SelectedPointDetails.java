@@ -10,6 +10,23 @@ public class SelectedPointDetails {
 	private Number canvasx;
 	private Number canvasy;
 	
+	public SelectedPointDetails() {
+		super();
+	}
+
+	public SelectedPointDetails(Number x, Number y, Number xval, Number yval,
+			String name, Number idx, Number canvasx, Number canvasy) {
+		super();
+		this.x = x;
+		this.y = y;
+		this.xval = xval;
+		this.yval = yval;
+		this.name = name;
+		this.idx = idx;
+		this.canvasx = canvasx;
+		this.canvasy = canvasy;
+	}
+	
 	public Number getX() {
 		return x;
 	}
@@ -57,6 +74,13 @@ public class SelectedPointDetails {
 	}
 	public void setCanvasy(Number canvasy) {
 		this.canvasy = canvasy;
+	}
+
+	@Override
+	public String toString() {
+		return "[x=" + x + ", y=" + y + ", xval=" + xval
+				+ ", yval=" + yval + ", name=" + name + ", idx=" + idx
+				+ ", canvasx=" + canvasx + ", canvasy=" + canvasy + "]";
 	}
 	
 	

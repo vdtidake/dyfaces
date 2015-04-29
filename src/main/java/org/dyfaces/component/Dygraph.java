@@ -23,7 +23,11 @@ import javax.faces.event.FacesEvent;
 import org.dyfaces.FacesParam;
 import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.HighlightRegion;
+import org.dyfaces.data.api.SelectedPointDetails;
 import org.dyfaces.event.GraphClicked;
+import org.dyfaces.event.PointClicked;
+
+import com.google.gson.Gson;
 
 @FacesComponent(value=Dygraph.COMPONENT_TYPE)
 public class Dygraph extends UIOutput implements ClientBehaviorHolder {
@@ -32,6 +36,7 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	public static final String  DEFAULT_EVENT ="graphClicked";
 	public static final String EVENT_POINTCLICKED = "pointClicked";
 	private static final Collection<String> EVENTS = Collections.unmodifiableCollection(Arrays.asList(DEFAULT_EVENT,EVENT_POINTCLICKED));
+	private static final Gson gson = new Gson();
 
 	@Override
 	public String getFamily() {
@@ -100,18 +105,18 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	public void setTooltip(Boolean value) {
 		setValue("tooltip",value);
     }
-	public String getSelectedPoint() {
+	/*public String getSelectedPoint() {
 		return (String) getValue("selectedPoint");
 	}
 	public void setSelectedPoint(String value) {
 		setValue("selectedPoint",value);
     }
-	public String getClickCoordinate() {
-		return (String) getValue("clickCoordinate");
+	public String getClosestPoints() {
+		return (String) getValue("closestPoints");
 	}
-	public void setClickCoordinate(String value) {
+	public void setClosestPoints(String value) {
 		setValue("clickCoordinate",value);
-    }
+    }*/
 
 	/**
 	 * 
@@ -159,7 +164,11 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			writer.writeAttribute("type", "hidden", null);
 			writer.writeAttribute("id", graphJSVar + "selectedPoint", null);
 			writer.writeAttribute("name", graphJSVar + "selectedPoint", null);
-			writer.writeAttribute("value", getSelectedPoint(), null);
+			writer.endElement("input");
+			writer.startElement("input", null);
+			writer.writeAttribute("type", "hidden", null);
+			writer.writeAttribute("id", graphJSVar + "closestPoints", null);
+			writer.writeAttribute("name", graphJSVar + "closestPoints", null);
 			writer.endElement("input");
 	 }
 	 @Override
@@ -203,11 +212,19 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 		final String clientId = getClientId(context);
 		final BehaviorEvent behaviorEvent = (BehaviorEvent) event;
 
-		GraphClicked graphClicked = new GraphClicked(this, behaviorEvent.getBehavior());
-		if(true){
+		final String eventName = params.get(FacesParam.EVENT.getName());
+
+		if (eventName.equals(Dygraph.DEFAULT_EVENT)){
+			final String pointDetails = params.get(clientId + "closestPoints");
+			List<SelectedPointDetails> closestPoints= gson.fromJson(pointDetails, List.class);
+			GraphClicked graphClicked = new GraphClicked(this, behaviorEvent.getBehavior(),closestPoints);
 			super.queueEvent(graphClicked);
+		}else if(eventName.equals(Dygraph.EVENT_POINTCLICKED)){
+			final String pointDetails = params.get(clientId + "selectedPoint");
+			PointClicked pointClicked = new PointClicked(this, behaviorEvent.getBehavior(),gson.fromJson(pointDetails, SelectedPointDetails.class));
+			super.queueEvent(pointClicked);
 		}else{
-		    super.queueEvent(event);
+			 super.queueEvent(event);
 		}
 	}
 	 
