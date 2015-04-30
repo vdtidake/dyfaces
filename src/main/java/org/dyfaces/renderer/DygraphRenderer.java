@@ -30,6 +30,7 @@ import org.dyfaces.DyConstants;
 import org.dyfaces.DyConstants.Callback;
 import org.dyfaces.Version;
 import org.dyfaces.component.Dygraph;
+import org.dyfaces.data.api.AnnotationConfigurations;
 import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
@@ -149,11 +150,11 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			writer.write(graphBuilder.toString());
 		}
 		graphBuilder = new StringBuilder();*/
-		Map<String,String> callBackMap = gson.fromJson(callbacks, Map.class);
+		Map<String,Object> callBackMap = gson.fromJson(callbacks, Map.class);
 		
 		List<HighlightRegion> highlightRegions = dygraph.getHghlightRegions();
 		if(highlightRegions != null && !highlightRegions.isEmpty()){
-			String hData = gson.toJson(highlightRegions);
+			String hData = gson.toJson(highlightRegions).replaceAll("\"", "'");
 			graphBuilder.append("var hd=").append(hData).append(";");
 			 String dyunderlayCallback = "''";
 			 if(callBackMap.containsKey(Callback.UnderlayCallback)){
@@ -193,13 +194,59 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			/*graphBuilder.append(graphJSVar).append(".updateOptions(").append("{pointClickCallback : dyPointClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
 			writer.write(graphBuilder.toString());*/
 		}
+		Map<String,Object> annoConfig= bindAnnotationConfiurations(dygraph); 
 		if(callBackMap != null && !callBackMap.isEmpty()){
+			if(annoConfig != null && !annoConfig.isEmpty()){
+				callBackMap.putAll(annoConfig);
+			}
 			graphBuilder.append(graphJSVar).append(".updateOptions(").append(gson.toJsonTree(callBackMap)).append(");");
+			String updateOptions = graphBuilder.toString().replaceAll("\"", "");
+			writer.write(updateOptions.replaceAll("\\\\", "\""));
+		}else if(annoConfig != null && !annoConfig.isEmpty()){
+			graphBuilder.append(graphJSVar).append(".updateOptions(").append(gson.toJsonTree(annoConfig)).append(");");
 			String updateOptions = graphBuilder.toString().replaceAll("\"", "");
 			writer.write(updateOptions.replaceAll("\\\\", "\""));
 		}
 	}
 	
+	private Map<String, Object> bindAnnotationConfiurations(Dygraph dygraph) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		AnnotationConfigurations configurations = null;
+		Object dataModel= dygraph.getDyDataModel();
+		if(dataModel instanceof DataModel){
+			DataModel dyDataModel = (DyDataModel) dataModel;
+			if(dyDataModel != null){
+				configurations = dyDataModel.getAnnotationConfigurations();
+			}
+		}else if(dataModel instanceof DataSeries){
+			DataSeries dataseries = (DataSeries) dataModel;
+			if(dataseries != null){
+				configurations = dataseries.getAnnotationConfigurations();
+			}
+		}
+		if(configurations != null){
+			String clickHandler = configurations.getClickHandler();
+			if(clickHandler != null && !clickHandler.isEmpty()){
+				map.put("annotationClickHandler", "dyAnnotationClickHandlerFn('"+clickHandler+"')");
+			}
+			String dblClickHandler = configurations.getDblClickHandler();
+			if(dblClickHandler != null && !dblClickHandler.isEmpty()){
+				map.put("annotationDblClickHandler", "dyAnnotationDblClickHandlerFn('"+clickHandler+"')");
+			}
+			String mouseOutHandler = configurations.getMouseOutHandler();
+			if(mouseOutHandler != null && !mouseOutHandler.isEmpty()){
+				map.put("annotationMouseOutHandler", "dyAnnotationMouseOutHandlerFn('"+clickHandler+"')");
+			}
+			String mouseOverHandler = configurations.getMouseOverHandler();
+			if(mouseOverHandler != null && !mouseOverHandler.isEmpty()){
+				map.put("annotationMouseOverHandler", "dyannotationMouseOverHandlerFn('"+clickHandler+"')");
+			}
+			map.put("displayAnnotations", configurations.getShowAnnotations());
+		}
+		
+		return map;
+	}
+
 	private void addDyAnnotations(FacesContext context, String graphJSVar,
 			Dygraph dygraph) throws IOException {
 		

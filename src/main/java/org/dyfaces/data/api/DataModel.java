@@ -10,4 +10,6 @@ public interface DataModel {
 	public void setxAxislable(String xAxisLable);
 	public String getyAxisLable();
 	public void setyAxislable(String yAxisLable);
+	public AnnotationConfigurations getAnnotationConfigurations();
+	public void setAnnotationConfigurations(AnnotationConfigurations annotationConfigurations);
 }

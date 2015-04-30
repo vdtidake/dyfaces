@@ -19,4 +19,7 @@ public interface DataSeries {
 
 	public void addHighlightRegions(List<HighlightRegion> highlightRegions);
 	
+	public AnnotationConfigurations getAnnotationConfigurations();
+	
+	public void setAnnotationConfigurations(AnnotationConfigurations annotationConfigurations);
 }

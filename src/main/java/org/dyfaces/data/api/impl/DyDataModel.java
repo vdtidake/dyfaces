@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.dyfaces.data.api.AnnotationConfigurations;
 import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
 
@@ -16,7 +17,7 @@ public class DyDataModel implements Serializable, DataModel{
 	private String graphTitle;
 	private String xAxisLable;
 	private String yAxisLable;
-
+	private AnnotationConfigurations annotationConfigurations;
 
 	public DyDataModel(){
 		this.dyDataSeries=new LinkedList<DataSeries>();
@@ -53,6 +54,16 @@ public class DyDataModel implements Serializable, DataModel{
 	public void setyAxislable(String yAxisLable) {
 		this.yAxisLable = yAxisLable;
 	}
+
+	public AnnotationConfigurations getAnnotationConfigurations() {
+		return annotationConfigurations;
+	}
+
+	public void setAnnotationConfigurations(
+			AnnotationConfigurations annotationConfigurations) {
+		this.annotationConfigurations = annotationConfigurations;
+	}
+	
 	
 	
 }

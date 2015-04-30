@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.dyfaces.data.api.AnnotationConfigurations;
 import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.HighlightRegion;
@@ -19,6 +20,7 @@ public class DyDataSeries implements Serializable,DataSeries{
 	private List<Point> dataPoints;
 	private List<AnnotationPoint> annotations;
 	private List<HighlightRegion> highlightRegions;
+	private AnnotationConfigurations annotationConfigurations;
 	
 	public DyDataSeries(){
 		dataPoints = new LinkedList<Point>();
@@ -67,6 +69,15 @@ public class DyDataSeries implements Serializable,DataSeries{
 		}
 		
 		this.highlightRegions = highlightRegions;
+	}
+
+	public AnnotationConfigurations getAnnotationConfigurations() {
+		return annotationConfigurations;
+	}
+
+	public void setAnnotationConfigurations(
+			AnnotationConfigurations annotationConfigurations) {
+		this.annotationConfigurations = annotationConfigurations;
 	}
 
 	

@@ -58,3 +58,35 @@ var dyPointClickCallbackFn = function(userCallback,ajaxFn,graphId) {
 		 }
 	 }
 }
+var dyAnnotationClickHandlerFn = function(userCallback) {
+	 return function(annotation, point, dygraph, event) {
+		 if(userCallback != ''){
+				var funcCall = userCallback + "(annotation, point, dygraph, event);";
+				eval(funcCall);
+		 }
+	 }
+}
+var dyAnnotationDblClickHandlerFn = function(userCallback) {
+	 return function(annotation, point, dygraph, event) {
+		 if(userCallback != ''){
+				var funcCall = userCallback + "(annotation, point, dygraph, event);";
+				eval(funcCall);
+		 }
+	 }
+}
+var dyAnnotationMouseOutHandlerFn = function(userCallback) {
+	 return function(annotation, point, dygraph, event) {
+		 if(userCallback != ''){
+				var funcCall = userCallback + "(annotation, point, dygraph, event);";
+				eval(funcCall);
+		 }
+	 }
+}
+var dyannotationMouseOverHandlerFn = function(userCallback) {
+	 return function(annotation, point, dygraph, event) {
+		 if(userCallback != ''){
+				var funcCall = userCallback + "(annotation, point, dygraph, event);";
+				eval(funcCall);
+		 }
+	 }
+}
