@@ -117,6 +117,12 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	public void setClosestPoints(String value) {
 		setValue("clickCoordinate",value);
     }*/
+	public String getVar() {
+		return (String) getValue("var");
+	}
+	public void setVar(String value) {
+		setValue("var",value);
+    }
 
 	/**
 	 * 
@@ -145,6 +151,9 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	 public void encodeBegin(FacesContext context) throws IOException {
 		 	ResponseWriter writer = context.getResponseWriter();
 		 	String graphJSVar = this.getClientId(context).replace(":", "_dy");
+		 	if(getVar() == null || getVar().isEmpty()){
+		 		setVar(graphJSVar);
+		 	}
 		 	/*
 			 * create Dygraph div element
 			 */

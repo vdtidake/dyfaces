@@ -87,8 +87,7 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		 */
 		writer.startElement("script", dygraph);
 		writer.writeAttribute("type", "text/javascript", null);
-		Map<String,Object> attr = dygraph.getAttributes();
-		String dyvar = (String) attr.get("var");
+		String dyvar = dygraph.getVar();
 		String dyjsVar = "";
 		if(dyvar != null && !dyvar.isEmpty()){
 			dyjsVar = "var "+dyvar+"=";
@@ -158,15 +157,15 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 				 dyunderlayCallback = "'"+callBackMap.get("underlayCallback")+"'";
 			 }
 			
-			graphBuilder.append(graphJSVar).append(".updateOptions(").append("{underlayCallback : dyhighlightRegion(hd,"+dyunderlayCallback+")}").append(");");
+			graphBuilder.append(graphJSVar).append(".updateOptions(").append("{underlayCallback : dyHighlightRegionFn(hd,"+dyunderlayCallback+")}").append(");");
 			writer.write(graphBuilder.toString());
 		}
 		
-		Boolean graphClickedBehavior = dygraph.getClientBehaviors().containsKey("graphClicked");
+		Boolean graphClickedBehavior = dygraph.getClientBehaviors().containsKey(Dygraph.DEFAULT_EVENT);
 		if(graphClickedBehavior){
 			String dyclickCallback = "''";
-			 if(callBackMap.containsKey("clickCallback")){
-				 dyclickCallback = "'"+callBackMap.get("clickCallback")+"'";
+			 if(callBackMap.containsKey(Dygraph.DEFAULT_EVENT)){
+				 dyclickCallback = "'"+callBackMap.get(Dygraph.DEFAULT_EVENT)+"'";
 			 }
 			ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.DEFAULT_EVENT, graphJSVar, null);
 		    String click = dygraph.getClientBehaviors().get(Dygraph.DEFAULT_EVENT).get(0).getScript(behaviorContext);
@@ -175,11 +174,11 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			writer.write(graphBuilder.toString());
 		}
 		
-		Boolean pointClickedBehavior = dygraph.getClientBehaviors().containsKey("pointClicked");
+		Boolean pointClickedBehavior = dygraph.getClientBehaviors().containsKey(Dygraph.EVENT_POINTCLICKED);
 		if(pointClickedBehavior){
 			String dyclickCallback = "''";
-			 if(callBackMap.containsKey("pointClicked")){
-				 dyclickCallback = "'"+callBackMap.get("pointClicked")+"'";
+			 if(callBackMap.containsKey(Dygraph.EVENT_POINTCLICKED)){
+				 dyclickCallback = "'"+callBackMap.get(Dygraph.EVENT_POINTCLICKED)+"'";
 			 }
 			ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.EVENT_POINTCLICKED, graphJSVar, null);
 		    String click = dygraph.getClientBehaviors().get(Dygraph.EVENT_POINTCLICKED).get(0).getScript(behaviorContext);

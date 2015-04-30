@@ -2,7 +2,7 @@
  * 
  */
 
-var dyhighlightRegion = function(data,userCallback) {
+var dyHighlightRegionFn = function(data,userCallback) {
 	console.log('highlight data '+JSON.stringify(data))
 	
     return function(canvas, area, g) {
@@ -11,9 +11,9 @@ var dyhighlightRegion = function(data,userCallback) {
 			var max = moment(d.maxX, ["YYYY/MM/DD hh:mm:ss"], true);
 			
 			if(min.isValid() && max.isValid()){
-				highlightRegionHelper(canvas, area, g, min, max, d.hexColor);
+				dyHighlightRegionHelper(canvas, area, g, min, max, d.hexColor);
 			}else{
-				highlightRegionHelper(canvas, area, g, d.minX, d.maxX, d.hexColor);
+				dyHighlightRegionHelper(canvas, area, g, d.minX, d.maxX, d.hexColor);
 			}
 			
 		});
@@ -24,7 +24,7 @@ var dyhighlightRegion = function(data,userCallback) {
     }
 };
 
-function highlightRegionHelper(canvas, area, g, start, end, fill) {
+function dyHighlightRegionHelper(canvas, area, g, start, end, fill) {
 	var bottomleft = g.toDomCoords(start, -20);
 	var topright = g.toDomCoords(end, +20);
 
