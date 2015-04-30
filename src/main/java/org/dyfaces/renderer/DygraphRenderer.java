@@ -26,6 +26,8 @@ import javax.faces.render.Renderer;
 
 import org.dyfaces.DyAttributes;
 import org.dyfaces.DyCallbacks;
+import org.dyfaces.DyConstants;
+import org.dyfaces.DyConstants.Callback;
 import org.dyfaces.Version;
 import org.dyfaces.component.Dygraph;
 import org.dyfaces.data.api.AnnotationPoint;
@@ -142,23 +144,24 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		String callbacks = getDygraphCallbacks(dygraph);
 		ResponseWriter writer = context.getResponseWriter();
 		StringBuilder graphBuilder = new StringBuilder();
-		if(callbacks != null && !"{}".equals(callbacks)){
+		/*if(callbacks != null && !"{}".equals(callbacks)){
 			graphBuilder.append(graphJSVar).append(".updateOptions(").append(callbacks).append(");");
 			writer.write(graphBuilder.toString());
 		}
-		graphBuilder = new StringBuilder();
+		graphBuilder = new StringBuilder();*/
 		Map<String,String> callBackMap = gson.fromJson(callbacks, Map.class);
+		
 		List<HighlightRegion> highlightRegions = dygraph.getHghlightRegions();
 		if(highlightRegions != null && !highlightRegions.isEmpty()){
 			String hData = gson.toJson(highlightRegions);
 			graphBuilder.append("var hd=").append(hData).append(";");
 			 String dyunderlayCallback = "''";
-			 if(callBackMap.containsKey("underlayCallback")){
+			 if(callBackMap.containsKey(Callback.UnderlayCallback)){
 				 dyunderlayCallback = "'"+callBackMap.get("underlayCallback")+"'";
 			 }
-			
-			graphBuilder.append(graphJSVar).append(".updateOptions(").append("{underlayCallback : dyHighlightRegionFn(hd,"+dyunderlayCallback+")}").append(");");
-			writer.write(graphBuilder.toString());
+			callBackMap.put(Callback.UnderlayCallback, "dyHighlightRegionFn(hd,"+dyunderlayCallback+")");
+			/*graphBuilder.append(graphJSVar).append(".updateOptions(").append("{underlayCallback : dyHighlightRegionFn(hd,"+dyunderlayCallback+")}").append(");");
+			writer.write(graphBuilder.toString());*/
 		}
 		
 		Boolean graphClickedBehavior = dygraph.getClientBehaviors().containsKey(Dygraph.DEFAULT_EVENT);
@@ -168,10 +171,12 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 				 dyclickCallback = "'"+callBackMap.get(Dygraph.DEFAULT_EVENT)+"'";
 			 }
 			ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.DEFAULT_EVENT, graphJSVar, null);
-		    String click = dygraph.getClientBehaviors().get(Dygraph.DEFAULT_EVENT).get(0).getScript(behaviorContext);
-				
-			graphBuilder.append(graphJSVar).append(".updateOptions(").append("{clickCallback  : dyClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
-			writer.write(graphBuilder.toString());
+		    String click = dygraph.getClientBehaviors().get(Dygraph.DEFAULT_EVENT).get(0).getScript(behaviorContext).replaceAll("'", "\'");
+
+		    callBackMap.put(Callback.ClickCallback, "dyClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')");
+		    
+			/*graphBuilder.append(graphJSVar).append(".updateOptions(").append("{clickCallback  : dyClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
+			writer.write(graphBuilder.toString());*/
 		}
 		
 		Boolean pointClickedBehavior = dygraph.getClientBehaviors().containsKey(Dygraph.EVENT_POINTCLICKED);
@@ -181,10 +186,17 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 				 dyclickCallback = "'"+callBackMap.get(Dygraph.EVENT_POINTCLICKED)+"'";
 			 }
 			ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.EVENT_POINTCLICKED, graphJSVar, null);
-		    String click = dygraph.getClientBehaviors().get(Dygraph.EVENT_POINTCLICKED).get(0).getScript(behaviorContext);
+		    String click = dygraph.getClientBehaviors().get(Dygraph.EVENT_POINTCLICKED).get(0).getScript(behaviorContext).replaceAll("'", "\'");
 				
-			graphBuilder.append(graphJSVar).append(".updateOptions(").append("{pointClickCallback : dyPointClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
-			writer.write(graphBuilder.toString());
+		    callBackMap.put(Callback.PointClickCallback, "dyPointClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')");
+		    
+			/*graphBuilder.append(graphJSVar).append(".updateOptions(").append("{pointClickCallback : dyPointClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
+			writer.write(graphBuilder.toString());*/
+		}
+		if(callBackMap != null && !callBackMap.isEmpty()){
+			graphBuilder.append(graphJSVar).append(".updateOptions(").append(gson.toJsonTree(callBackMap)).append(");");
+			String updateOptions = graphBuilder.toString().replaceAll("\"", "");
+			writer.write(updateOptions.replaceAll("\\\\", "\""));
 		}
 	}
 	
