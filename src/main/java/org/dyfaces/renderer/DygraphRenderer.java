@@ -194,7 +194,7 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			/*graphBuilder.append(graphJSVar).append(".updateOptions(").append("{pointClickCallback : dyPointClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
 			writer.write(graphBuilder.toString());*/
 		}
-		Map<String,Object> annoConfig= bindAnnotationConfiurations(dygraph); 
+		Map<String,Object> annoConfig= bindAnnotationConfiurations(context, graphJSVar, dygraph); 
 		if(callBackMap != null && !callBackMap.isEmpty()){
 			if(annoConfig != null && !annoConfig.isEmpty()){
 				callBackMap.putAll(annoConfig);
@@ -209,7 +209,7 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		}
 	}
 	
-	private Map<String, Object> bindAnnotationConfiurations(Dygraph dygraph) {
+	private Map<String, Object> bindAnnotationConfiurations(FacesContext context,String graphJSVar,Dygraph dygraph) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		AnnotationConfigurations configurations = null;
 		Object dataModel= dygraph.getDyDataModel();
@@ -227,11 +227,17 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		if(configurations != null){
 			String clickHandler = configurations.getClickHandler();
 			if(clickHandler != null && !clickHandler.isEmpty()){
-				map.put("annotationClickHandler", "dyAnnotationClickHandlerFn('"+clickHandler+"')");
+				ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.EVENT_ANNOCLICKED, graphJSVar, null);
+			    String click = dygraph.getClientBehaviors().get(Dygraph.EVENT_ANNOCLICKED).get(0).getScript(behaviorContext);
+				
+				map.put("annotationClickHandler", "dyAnnotationClickHandlerFn('"+clickHandler+"',\""+click+"\",'"+graphJSVar+"')");
 			}
 			String dblClickHandler = configurations.getDblClickHandler();
 			if(dblClickHandler != null && !dblClickHandler.isEmpty()){
-				map.put("annotationDblClickHandler", "dyAnnotationDblClickHandlerFn('"+clickHandler+"')");
+				ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.EVENT_ANNODBLCLICKED, graphJSVar, null);
+			    String dblclick = dygraph.getClientBehaviors().get(Dygraph.EVENT_ANNODBLCLICKED).get(0).getScript(behaviorContext);
+				
+				map.put("annotationDblClickHandler", "dyAnnotationDblClickHandlerFn('"+clickHandler+"',\""+dblclick+"\",'"+graphJSVar+"')");
 			}
 			String mouseOutHandler = configurations.getMouseOutHandler();
 			if(mouseOutHandler != null && !mouseOutHandler.isEmpty()){

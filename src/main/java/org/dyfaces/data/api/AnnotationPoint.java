@@ -105,5 +105,14 @@ public class AnnotationPoint implements Serializable{
 		this.attachAtBottom = attachAtBottom;
 	}
 
+	@Override
+	public String toString() {
+		return "[series=" + series + ", x=" + x
+				+ ", shortText=" + shortText + ", text=" + text + ", icon="
+				+ icon + ", width=" + width + ", height=" + height
+				+ ", tickHeight=" + tickHeight + ", cssClass=" + cssClass
+				+ ", attachAtBottom=" + attachAtBottom + "]";
+	}
+
 	
 }

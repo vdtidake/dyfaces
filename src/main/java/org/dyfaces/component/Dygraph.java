@@ -24,6 +24,7 @@ import org.dyfaces.FacesParam;
 import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.SelectedPointDetails;
+import org.dyfaces.event.AnnotationClicked;
 import org.dyfaces.event.GraphClicked;
 import org.dyfaces.event.PointClicked;
 
@@ -35,7 +36,9 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	public static final String COMPONENT_FAMILY = "org.dyfaces.component";
 	public static final String  DEFAULT_EVENT ="graphClicked";
 	public static final String EVENT_POINTCLICKED = "pointClicked";
-	private static final Collection<String> EVENTS = Collections.unmodifiableCollection(Arrays.asList(DEFAULT_EVENT,EVENT_POINTCLICKED));
+	public static final String EVENT_ANNOCLICKED = "annotationClicked";
+	public static final String EVENT_ANNODBLCLICKED = "annotationDblClicked";
+	private static final Collection<String> EVENTS = Collections.unmodifiableCollection(Arrays.asList(DEFAULT_EVENT,EVENT_POINTCLICKED,EVENT_ANNOCLICKED,EVENT_ANNODBLCLICKED));
 	private static final Gson gson = new Gson();
 
 	@Override
@@ -179,6 +182,12 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			writer.writeAttribute("id", graphJSVar + "closestPoints", null);
 			writer.writeAttribute("name", graphJSVar + "closestPoints", null);
 			writer.endElement("input");
+			writer.startElement("input", null);
+			writer.writeAttribute("type", "hidden", null);
+			writer.writeAttribute("id", graphJSVar + "annotationPoint", null);
+			writer.writeAttribute("name", graphJSVar + "annotationPoint", null);
+			writer.endElement("input");
+			
 	 }
 	 @Override
 	 public void decode(FacesContext context) {
@@ -232,6 +241,11 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			final String pointDetails = params.get(clientId + "selectedPoint");
 			PointClicked pointClicked = new PointClicked(this, behaviorEvent.getBehavior(),gson.fromJson(pointDetails, SelectedPointDetails.class));
 			super.queueEvent(pointClicked);
+		}else if(eventName.equals(Dygraph.EVENT_ANNOCLICKED) || eventName.equals(Dygraph.EVENT_ANNODBLCLICKED)){
+			final String annopointDetails = params.get(clientId + "annotationPoint");
+			final String pointDetails = params.get(clientId + "selectedPoint");
+			AnnotationClicked annotationClicked = new AnnotationClicked(this, behaviorEvent.getBehavior(), gson.fromJson(annopointDetails, AnnotationPoint.class),gson.fromJson(pointDetails, SelectedPointDetails.class));
+			super.queueEvent(annotationClicked);
 		}else{
 			 super.queueEvent(event);
 		}

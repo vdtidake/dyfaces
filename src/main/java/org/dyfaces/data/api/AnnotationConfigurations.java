@@ -1,6 +1,12 @@
 package org.dyfaces.data.api;
 
-public class AnnotationConfigurations {
+import java.io.Serializable;
+
+public class AnnotationConfigurations implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7258389525697420358L;
 	private Boolean showAnnotations=Boolean.TRUE;
 	private String clickHandler;
 	private String mouseOverHandler;

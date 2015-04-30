@@ -58,15 +58,20 @@ var dyPointClickCallbackFn = function(userCallback,ajaxFn,graphId) {
 		 }
 	 }
 }
-var dyAnnotationClickHandlerFn = function(userCallback) {
+var dyAnnotationClickHandlerFn = function(userCallback,ajaxFn,graphId) {
 	 return function(annotation, point, dygraph, event) {
 		 if(userCallback != ''){
-				var funcCall = userCallback + "(annotation, point, dygraph, event);";
-				eval(funcCall);
+			 $('#'+graphId+'annotationPoint').val(JSON.stringify(annotation));
+			 $('#'+graphId+'selectedPoint').val(JSON.stringify(point));
+			 if(ajaxFn != ''){
+					eval(ajaxFn);
+			  }
+			  var funcCall = userCallback + "(annotation, point, dygraph, event);";
+			  eval(funcCall);
 		 }
 	 }
 }
-var dyAnnotationDblClickHandlerFn = function(userCallback) {
+var dyAnnotationDblClickHandlerFn = function(userCallback,ajaxFn,graphId) {
 	 return function(annotation, point, dygraph, event) {
 		 if(userCallback != ''){
 				var funcCall = userCallback + "(annotation, point, dygraph, event);";
