@@ -7,11 +7,29 @@ public class AnnotationConfigurations implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -7258389525697420358L;
+	/**
+	 * Only applies when graph uses GViz chart (Currently not supported)
+	 */
 	private Boolean showAnnotations=Boolean.TRUE;
+	/**
+	 * function is called whenever the user clicks on an annotation. signature  function(annotation, point, dygraph, event)
+	 * For ajax behavior add ajax event annotationClicked
+	 */
 	private String clickHandler;
+	/**
+	 * function is called whenever the user double-clicks on an annotation. signature  function(annotation, point, dygraph, event)
+	 * For ajax behavior add ajax event annotationDblClicked
+	 */
 	private String mouseOverHandler;
+	/**
+	 *  function is called whenever the user mouses out of an annotation. signature  function(annotation, point, dygraph, event)
+	 */
 	private String mouseOutHandler;
+	/**
+	 * function is called whenever the user mouses over an annotation. signature  function(annotation, point, dygraph, event)
+	 */
 	private String dblClickHandler;
+	
 	public Boolean getShowAnnotations() {
 		return showAnnotations;
 	}

@@ -10,6 +10,7 @@ import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.Point;
+import org.dyfaces.data.api.SeriesColorOptions;
 
 public class DyDataSeries implements Serializable,DataSeries{
 	/**
@@ -20,7 +21,14 @@ public class DyDataSeries implements Serializable,DataSeries{
 	private List<Point> dataPoints;
 	private List<AnnotationPoint> annotations;
 	private List<HighlightRegion> highlightRegions;
+	/**
+	 * Annotations
+	 */
 	private AnnotationConfigurations annotationConfigurations;
+	/**
+	 * Data Series Colors
+	 */
+	private SeriesColorOptions seriesOptions;
 	
 	public DyDataSeries(){
 		dataPoints = new LinkedList<Point>();
@@ -78,6 +86,14 @@ public class DyDataSeries implements Serializable,DataSeries{
 	public void setAnnotationConfigurations(
 			AnnotationConfigurations annotationConfigurations) {
 		this.annotationConfigurations = annotationConfigurations;
+	}
+
+	public SeriesColorOptions getSeriesColorOptions() {
+		return seriesOptions;
+	}
+
+	public void setSeriesColorOptions(SeriesColorOptions seriesOptions) {
+		this.seriesOptions = seriesOptions;
 	}
 
 	

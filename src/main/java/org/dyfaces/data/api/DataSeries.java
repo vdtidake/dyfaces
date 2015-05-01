@@ -22,4 +22,8 @@ public interface DataSeries {
 	public AnnotationConfigurations getAnnotationConfigurations();
 	
 	public void setAnnotationConfigurations(AnnotationConfigurations annotationConfigurations);
+	
+	public SeriesColorOptions getSeriesColorOptions();
+
+	public void setSeriesColorOptions(SeriesColorOptions seriesOptions);
 }

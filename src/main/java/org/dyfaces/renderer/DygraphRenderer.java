@@ -36,6 +36,7 @@ import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.Point;
+import org.dyfaces.data.api.SeriesColorOptions;
 import org.dyfaces.data.api.impl.DyDataModel;
 import org.dyfaces.utils.DyUtils;
 import org.dyfaces.utils.DyfacesUtils;
@@ -211,12 +212,24 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			/*graphBuilder.append(graphJSVar).append(".updateOptions(").append("{pointClickCallback : dyPointClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
 			writer.write(graphBuilder.toString());*/
 		}
+		if(callBackMap == null){
+			callBackMap = new HashMap<String, Object>();
+		}
 		
 		Map<String,Object> annoConfig= bindAnnotationConfiurations(context, graphJSVar, dygraph); 
-		if(callBackMap != null && !callBackMap.isEmpty()){
-			if(annoConfig != null && !annoConfig.isEmpty()){
-				callBackMap.putAll(annoConfig);
-			}
+		
+		if(annoConfig != null && !annoConfig.isEmpty()){
+			callBackMap.putAll(annoConfig);
+		}
+		
+		Map<String,Object> seriesColorOptions= bindSeriesColorOptions(context, graphJSVar, dygraph); 
+		
+		if(seriesColorOptions != null && !seriesColorOptions.isEmpty()){
+			callBackMap.putAll(seriesColorOptions);
+		}
+		
+		
+		if(!callBackMap.isEmpty()){
 			graphBuilder.append(graphJSVar).append(".updateOptions(").append(gson.toJsonTree(callBackMap)).append(");");
 			String updateOptions = graphBuilder.toString().replaceAll("\"", "");
 			writer.write(updateOptions.replaceAll("\\\\", "\""));
@@ -268,6 +281,38 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			map.put("displayAnnotations", configurations.getShowAnnotations());
 		}
 		
+		return map;
+	}
+	
+	private Map<String, Object> bindSeriesColorOptions(FacesContext context,
+			String graphJSVar, Dygraph dygraph) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		SeriesColorOptions colorOptions = null;
+		Object dataModel= dygraph.getDyDataModel();
+		
+		if(dataModel instanceof DataModel){
+			DataModel dyDataModel = (DyDataModel) dataModel;
+			if(dyDataModel != null){
+				colorOptions = dyDataModel.getSeriesColorOptions();
+			}
+		}else if(dataModel instanceof DataSeries){
+			DataSeries dataseries = (DataSeries) dataModel;
+			if(dataseries != null){
+				colorOptions = dataseries.getSeriesColorOptions();
+			}
+		}
+		if(colorOptions != null){
+			String color = colorOptions.getColor();
+			if(color != null && !color.isEmpty()){
+				map.put("color", "'"+color+"'");
+			}
+			Float colorValue = colorOptions.getColorValue();
+			map.put("colorValue", colorValue);
+			Float fillAlpha = colorOptions.getFillAlpha();
+			map.put("fillAlpha", fillAlpha);
+			Float colorSaturation = colorOptions.getColorSaturation();
+			map.put("colorSaturation ", colorSaturation);
+		}
 		return map;
 	}
 

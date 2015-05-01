@@ -7,6 +7,7 @@ import java.util.List;
 import org.dyfaces.data.api.AnnotationConfigurations;
 import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
+import org.dyfaces.data.api.SeriesColorOptions;
 
 public class DyDataModel implements Serializable, DataModel{
 	/**
@@ -17,8 +18,15 @@ public class DyDataModel implements Serializable, DataModel{
 	private String graphTitle;
 	private String xAxisLable;
 	private String yAxisLable;
+	/**
+	 * Annotations
+	 */
 	private AnnotationConfigurations annotationConfigurations;
-
+	/**
+	 * Data Series Colors
+	 */
+	private SeriesColorOptions seriesOptions;
+	
 	public DyDataModel(){
 		this.dyDataSeries=new LinkedList<DataSeries>();
 	}
@@ -64,6 +72,12 @@ public class DyDataModel implements Serializable, DataModel{
 		this.annotationConfigurations = annotationConfigurations;
 	}
 	
-	
+	public SeriesColorOptions getSeriesColorOptions() {
+		return seriesOptions;
+	}
+
+	public void setSeriesColorOptions(SeriesColorOptions seriesOptions) {
+		this.seriesOptions = seriesOptions;
+	}
 	
 }

@@ -12,4 +12,6 @@ public interface DataModel {
 	public void setyAxislable(String yAxisLable);
 	public AnnotationConfigurations getAnnotationConfigurations();
 	public void setAnnotationConfigurations(AnnotationConfigurations annotationConfigurations);
+	public SeriesColorOptions getSeriesColorOptions();
+	public void setSeriesColorOptions(SeriesColorOptions seriesOptions);
 }
