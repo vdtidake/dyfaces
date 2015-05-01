@@ -120,10 +120,7 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		 * write all Dygraph script to response
 		 */
 		writer.write(graphBuilder.toString());
-		/*
-		 *Dygraph callback options 
-		 */
-		bindDyCallbacks(context,graphJSVar,dygraph);
+		
 		/*
 		 *Add annotations if exists 
 		 */
@@ -131,6 +128,11 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		if(annotations != null && !annotations.isEmpty()){
 			addDyAnnotations(context,graphJSVar,dygraph);
 		}
+		/*
+		 *Dygraph callback options 
+		 */
+		bindDyCallbacks(context,graphJSVar,dygraph);
+		
 		String  sync= dygraph.getSynchronize();
 		if(sync != null && !sync.isEmpty()){
 			syncDygraphs(sync,context,graphJSVar);
@@ -194,6 +196,22 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			/*graphBuilder.append(graphJSVar).append(".updateOptions(").append("{pointClickCallback : dyPointClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
 			writer.write(graphBuilder.toString());*/
 		}
+		
+		Boolean zoomBehavior = dygraph.getClientBehaviors().containsKey(Dygraph.EVENT_GRAPHZOOMED);
+		if(zoomBehavior){
+			String dyzoomCallback = "''";
+			 if(callBackMap.containsKey(Callback.ZoomCallback)){
+				 dyzoomCallback = "'"+callBackMap.get(Callback.ZoomCallback)+"'";
+			 }
+			ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.EVENT_GRAPHZOOMED, graphJSVar, null);
+		    String zoom = dygraph.getClientBehaviors().get(Dygraph.EVENT_GRAPHZOOMED).get(0).getScript(behaviorContext);
+				
+		    callBackMap.put(Callback.ZoomCallback, "dyZoomCallbackFn("+dyzoomCallback+",\""+zoom+"\",'"+graphJSVar+"')");
+		    
+			/*graphBuilder.append(graphJSVar).append(".updateOptions(").append("{pointClickCallback : dyPointClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
+			writer.write(graphBuilder.toString());*/
+		}
+		
 		Map<String,Object> annoConfig= bindAnnotationConfiurations(context, graphJSVar, dygraph); 
 		if(callBackMap != null && !callBackMap.isEmpty()){
 			if(annoConfig != null && !annoConfig.isEmpty()){

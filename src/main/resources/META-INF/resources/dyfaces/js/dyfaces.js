@@ -95,3 +95,18 @@ var dyannotationMouseOverHandlerFn = function(userCallback) {
 		 }
 	 }
 }
+var dyZoomCallbackFn = function(userCallback,ajaxFn,graphId) {
+	 return function(minDate, maxDate, yRanges) {
+		 var event = null;
+		 if(ajaxFn != ''){
+			 var xrange = [minDate, maxDate]
+			 $('#'+graphId+'dateWindow').val('['+xrange+']');
+			 $('#'+graphId+'valueRange').val('['+yRanges+']');
+			 eval(ajaxFn);
+		  }
+		 if(userCallback != ''){
+				var funcCall = userCallback + "(minDate, maxDate, yRanges);";
+				eval(funcCall);
+		 }
+	 }
+}

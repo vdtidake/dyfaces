@@ -26,6 +26,7 @@ import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.SelectedPointDetails;
 import org.dyfaces.event.AnnotationClicked;
 import org.dyfaces.event.GraphClicked;
+import org.dyfaces.event.GraphZoomed;
 import org.dyfaces.event.PointClicked;
 
 import com.google.gson.Gson;
@@ -38,7 +39,8 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	public static final String EVENT_POINTCLICKED = "pointClicked";
 	public static final String EVENT_ANNOCLICKED = "annotationClicked";
 	public static final String EVENT_ANNODBLCLICKED = "annotationDblClicked";
-	private static final Collection<String> EVENTS = Collections.unmodifiableCollection(Arrays.asList(DEFAULT_EVENT,EVENT_POINTCLICKED,EVENT_ANNOCLICKED,EVENT_ANNODBLCLICKED));
+	public static final String EVENT_GRAPHZOOMED = "graphZoomed";
+	private static final Collection<String> EVENTS = Collections.unmodifiableCollection(Arrays.asList(DEFAULT_EVENT,EVENT_POINTCLICKED,EVENT_ANNOCLICKED,EVENT_ANNODBLCLICKED,EVENT_GRAPHZOOMED));
 	private static final Gson gson = new Gson();
 
 	@Override
@@ -177,15 +179,29 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			writer.writeAttribute("id", graphJSVar + "selectedPoint", null);
 			writer.writeAttribute("name", graphJSVar + "selectedPoint", null);
 			writer.endElement("input");
+			
 			writer.startElement("input", null);
 			writer.writeAttribute("type", "hidden", null);
 			writer.writeAttribute("id", graphJSVar + "closestPoints", null);
 			writer.writeAttribute("name", graphJSVar + "closestPoints", null);
 			writer.endElement("input");
+			
 			writer.startElement("input", null);
 			writer.writeAttribute("type", "hidden", null);
 			writer.writeAttribute("id", graphJSVar + "annotationPoint", null);
 			writer.writeAttribute("name", graphJSVar + "annotationPoint", null);
+			writer.endElement("input");
+			
+			writer.startElement("input", null);
+			writer.writeAttribute("type", "hidden", null);
+			writer.writeAttribute("id", graphJSVar + "dateWindow", null);
+			writer.writeAttribute("name", graphJSVar + "dateWindow", null);
+			writer.endElement("input");
+			
+			writer.startElement("input", null);
+			writer.writeAttribute("type", "hidden", null);
+			writer.writeAttribute("id", graphJSVar + "valueRange", null);
+			writer.writeAttribute("name", graphJSVar + "valueRange", null);
 			writer.endElement("input");
 			
 	 }
@@ -234,7 +250,8 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 
 		if (eventName.equals(Dygraph.DEFAULT_EVENT)){
 			final String pointDetails = params.get(clientId + "closestPoints");
-			List<SelectedPointDetails> closestPoints= gson.fromJson(pointDetails, List.class);
+			SelectedPointDetails[] points= gson.fromJson(pointDetails, SelectedPointDetails[].class);
+			List<SelectedPointDetails> closestPoints = Arrays.asList(points);
 			GraphClicked graphClicked = new GraphClicked(this, behaviorEvent.getBehavior(),closestPoints);
 			super.queueEvent(graphClicked);
 		}else if(eventName.equals(Dygraph.EVENT_POINTCLICKED)){
@@ -246,6 +263,13 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			final String pointDetails = params.get(clientId + "selectedPoint");
 			AnnotationClicked annotationClicked = new AnnotationClicked(this, behaviorEvent.getBehavior(), gson.fromJson(annopointDetails, AnnotationPoint.class),gson.fromJson(pointDetails, SelectedPointDetails.class));
 			super.queueEvent(annotationClicked);
+		}else if(eventName.equals(Dygraph.EVENT_GRAPHZOOMED)){
+			final String dateWindow = params.get(clientId + "dateWindow");
+			final String valueRange = params.get(clientId + "valueRange");
+			Number[] dateWindowArr= gson.fromJson(dateWindow, Number[].class);
+			Number[] valueRangeArr= gson.fromJson(valueRange, Number[].class);
+			GraphZoomed graphZoomed = new GraphZoomed(this, behaviorEvent.getBehavior(), dateWindowArr,valueRangeArr);
+			super.queueEvent(graphZoomed);
 		}else{
 			 super.queueEvent(event);
 		}
