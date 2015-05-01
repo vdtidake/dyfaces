@@ -14,4 +14,6 @@ public interface DataModel {
 	public void setAnnotationConfigurations(AnnotationConfigurations annotationConfigurations);
 	public SeriesColorOptions getSeriesColorOptions();
 	public void setSeriesColorOptions(SeriesColorOptions seriesOptions);
+	public GridOptions getGridOptions();
+	public void setGridOptions(GridOptions gridOptions);
 }

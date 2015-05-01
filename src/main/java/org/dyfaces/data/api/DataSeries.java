@@ -26,4 +26,8 @@ public interface DataSeries {
 	public SeriesColorOptions getSeriesColorOptions();
 
 	public void setSeriesColorOptions(SeriesColorOptions seriesOptions);
+	
+	public GridOptions getGridOptions();
+	
+	public void setGridOptions(GridOptions gridOptions);
 }

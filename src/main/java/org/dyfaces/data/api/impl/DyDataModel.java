@@ -7,6 +7,7 @@ import java.util.List;
 import org.dyfaces.data.api.AnnotationConfigurations;
 import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
+import org.dyfaces.data.api.GridOptions;
 import org.dyfaces.data.api.SeriesColorOptions;
 
 public class DyDataModel implements Serializable, DataModel{
@@ -26,6 +27,10 @@ public class DyDataModel implements Serializable, DataModel{
 	 * Data Series Colors
 	 */
 	private SeriesColorOptions seriesOptions;
+	/**
+	 * Grid
+	 */
+	private GridOptions gridOptions;
 	
 	public DyDataModel(){
 		this.dyDataSeries=new LinkedList<DataSeries>();
@@ -79,5 +84,14 @@ public class DyDataModel implements Serializable, DataModel{
 	public void setSeriesColorOptions(SeriesColorOptions seriesOptions) {
 		this.seriesOptions = seriesOptions;
 	}
+
+	public GridOptions getGridOptions() {
+		return gridOptions;
+	}
+
+	public void setGridOptions(GridOptions gridOptions) {
+		this.gridOptions = gridOptions;
+	}
+	
 	
 }

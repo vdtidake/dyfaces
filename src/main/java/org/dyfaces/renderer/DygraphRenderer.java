@@ -34,6 +34,9 @@ import org.dyfaces.data.api.AnnotationConfigurations;
 import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
+import org.dyfaces.data.api.GridOptions;
+import org.dyfaces.data.api.GridOptions.Axes;
+import org.dyfaces.data.api.GridOptions.PerAxis;
 import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.SeriesColorOptions;
@@ -61,7 +64,7 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 	public static final String RENDERER_TYPE = "org.dyfaces.component.graph.renderer";
 	private static final Gson gson = new Gson();
 	private static final GsonBuilder builder = new GsonBuilder();
-	
+	private static final Gson gsonExopse = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
 	@Override
 	public void decode(FacesContext context, UIComponent component) {
@@ -228,6 +231,11 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			callBackMap.putAll(seriesColorOptions);
 		}
 		
+		Map<String,Object> gridOptions= bindGridOptions(context, graphJSVar, dygraph); 
+		
+		if(gridOptions != null && !gridOptions.isEmpty()){
+			callBackMap.putAll(gridOptions);
+		}
 		
 		if(!callBackMap.isEmpty()){
 			graphBuilder.append(graphJSVar).append(".updateOptions(").append(gson.toJsonTree(callBackMap)).append(");");
@@ -240,6 +248,52 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		}
 	}
 	
+	private Map<String, Object> bindGridOptions(FacesContext context,
+			String graphJSVar, Dygraph dygraph) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		GridOptions gridOptions = null;
+		Object dataModel= dygraph.getDyDataModel();
+		if(dataModel instanceof DataModel){
+			DataModel dyDataModel = (DyDataModel) dataModel;
+			if(dyDataModel != null){
+				//TODO Handle for X, Y and Y2
+				gridOptions = dyDataModel.getGridOptions();
+				setGridOptions(gridOptions, map);
+			}
+		}else if(dataModel instanceof DataSeries){
+			DataSeries dataseries = (DataSeries) dataModel;
+			if(dataseries != null){
+				gridOptions = dataseries.getGridOptions();
+				setGridOptions(gridOptions, map);
+			}
+		}
+		return map;
+	}
+	
+	private void setGridOptions(GridOptions gridOptions, Map<String, Object> map){
+		map.put("drawGrid", gridOptions.getDrawGrid());
+		if(gridOptions.getDrawGrid()){
+			map.put("drawXGrid", gridOptions.getDrawXGrid());
+			map.put("drawYGrid", gridOptions.getDrawYGrid());
+		}
+		map.put("gridLineColor", gridOptions.getGridLineColor());
+		/*
+		 * check per axes options
+		 */
+		//Map<String,Map<Axes,PerAxis>> perAxisConfig = new HashMap<String, Map<Axes,PerAxis>>(3);
+		List<PerAxis> perAxesList = gridOptions.getAxisGridOptions();
+		if(perAxesList != null){
+			Map<Axes,PerAxis> tmp = new HashMap<Axes, PerAxis>(3);
+			for (PerAxis perAxis : perAxesList) {
+				tmp.put(perAxis.getAxis(), perAxis);
+			}
+			if(!tmp.isEmpty()){
+				map.put("axes",gson.toJson(tmp).replaceAll("\"", "'"));
+			}
+		}
+		
+	}
+
 	private Map<String, Object> bindAnnotationConfiurations(FacesContext context,String graphJSVar,Dygraph dygraph) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		AnnotationConfigurations configurations = null;

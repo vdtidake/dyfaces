@@ -8,6 +8,7 @@ import java.util.List;
 import org.dyfaces.data.api.AnnotationConfigurations;
 import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.DataSeries;
+import org.dyfaces.data.api.GridOptions;
 import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.SeriesColorOptions;
@@ -29,6 +30,10 @@ public class DyDataSeries implements Serializable,DataSeries{
 	 * Data Series Colors
 	 */
 	private SeriesColorOptions seriesOptions;
+	/**
+	 * Grid
+	 */
+	private GridOptions gridOptions;
 	
 	public DyDataSeries(){
 		dataPoints = new LinkedList<Point>();
@@ -94,6 +99,14 @@ public class DyDataSeries implements Serializable,DataSeries{
 
 	public void setSeriesColorOptions(SeriesColorOptions seriesOptions) {
 		this.seriesOptions = seriesOptions;
+	}
+
+	public GridOptions getGridOptions() {
+		return gridOptions;
+	}
+
+	public void setGridOptions(GridOptions gridOptions) {
+		this.gridOptions = gridOptions;
 	}
 
 	
