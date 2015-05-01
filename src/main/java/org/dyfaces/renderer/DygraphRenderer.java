@@ -151,11 +151,7 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		String callbacks = getDygraphCallbacks(dygraph);
 		ResponseWriter writer = context.getResponseWriter();
 		StringBuilder graphBuilder = new StringBuilder();
-		/*if(callbacks != null && !"{}".equals(callbacks)){
-			graphBuilder.append(graphJSVar).append(".updateOptions(").append(callbacks).append(");");
-			writer.write(graphBuilder.toString());
-		}
-		graphBuilder = new StringBuilder();*/
+
 		Map<String,Object> callBackMap = gson.fromJson(callbacks, Map.class);
 		
 		List<HighlightRegion> highlightRegions = dygraph.getHghlightRegions();
@@ -167,8 +163,6 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 				 dyunderlayCallback = "'"+callBackMap.get(Callback.UnderlayCallback)+"'";
 			 }
 			callBackMap.put(Callback.UnderlayCallback, "dyHighlightRegionFn(hd,"+dyunderlayCallback+")");
-			/*graphBuilder.append(graphJSVar).append(".updateOptions(").append("{underlayCallback : dyHighlightRegionFn(hd,"+dyunderlayCallback+")}").append(");");
-			writer.write(graphBuilder.toString());*/
 		}
 		
 		Boolean graphClickedBehavior = dygraph.getClientBehaviors().containsKey(Dygraph.DEFAULT_EVENT);
@@ -177,13 +171,8 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			 if(callBackMap.containsKey(Callback.ClickCallback)){
 				 dyclickCallback = "'"+callBackMap.get(Callback.ClickCallback)+"'";
 			 }
-			ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.DEFAULT_EVENT, graphJSVar, null);
-		    String click = dygraph.getClientBehaviors().get(Dygraph.DEFAULT_EVENT).get(0).getScript(behaviorContext);
-
+		    String click  = getScript(context, dygraph, Dygraph.DEFAULT_EVENT, graphJSVar);
 		    callBackMap.put(Callback.ClickCallback, "dyClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')");
-		    
-			/*graphBuilder.append(graphJSVar).append(".updateOptions(").append("{clickCallback  : dyClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
-			writer.write(graphBuilder.toString());*/
 		}
 		
 		Boolean pointClickedBehavior = dygraph.getClientBehaviors().containsKey(Dygraph.EVENT_POINTCLICKED);
@@ -192,13 +181,9 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			 if(callBackMap.containsKey(Callback.PointClickCallback)){
 				 dyclickCallback = "'"+callBackMap.get(Callback.PointClickCallback)+"'";
 			 }
-			ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.EVENT_POINTCLICKED, graphJSVar, null);
-		    String click = dygraph.getClientBehaviors().get(Dygraph.EVENT_POINTCLICKED).get(0).getScript(behaviorContext);
+		    String pointclick = getScript(context, dygraph, Dygraph.EVENT_POINTCLICKED, graphJSVar);
 				
-		    callBackMap.put(Callback.PointClickCallback, "dyPointClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')");
-		    
-			/*graphBuilder.append(graphJSVar).append(".updateOptions(").append("{pointClickCallback : dyPointClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
-			writer.write(graphBuilder.toString());*/
+		    callBackMap.put(Callback.PointClickCallback, "dyPointClickCallbackFn("+dyclickCallback+",\""+pointclick+"\",'"+graphJSVar+"')");
 		}
 		
 		Boolean zoomBehavior = dygraph.getClientBehaviors().containsKey(Dygraph.EVENT_GRAPHZOOMED);
@@ -207,13 +192,9 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			 if(callBackMap.containsKey(Callback.ZoomCallback)){
 				 dyzoomCallback = "'"+callBackMap.get(Callback.ZoomCallback)+"'";
 			 }
-			ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.EVENT_GRAPHZOOMED, graphJSVar, null);
-		    String zoom = dygraph.getClientBehaviors().get(Dygraph.EVENT_GRAPHZOOMED).get(0).getScript(behaviorContext);
+		    String zoom = getScript(context, dygraph, Dygraph.EVENT_GRAPHZOOMED, graphJSVar);
 				
 		    callBackMap.put(Callback.ZoomCallback, "dyZoomCallbackFn("+dyzoomCallback+",\""+zoom+"\",'"+graphJSVar+"')");
-		    
-			/*graphBuilder.append(graphJSVar).append(".updateOptions(").append("{pointClickCallback : dyPointClickCallbackFn("+dyclickCallback+",\""+click+"\",'"+graphJSVar+"')}").append(");");
-			writer.write(graphBuilder.toString());*/
 		}
 		if(callBackMap == null){
 			callBackMap = new HashMap<String, Object>();
@@ -273,14 +254,17 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 	private void setGridOptions(GridOptions gridOptions, Map<String, Object> map){
 		map.put("drawGrid", gridOptions.getDrawGrid());
 		if(gridOptions.getDrawGrid()){
-			map.put("drawXGrid", gridOptions.getDrawXGrid());
-			map.put("drawYGrid", gridOptions.getDrawYGrid());
+			if(!gridOptions.getDrawXGrid()){
+				map.put("drawXGrid", gridOptions.getDrawXGrid());
+			}
+			if(!gridOptions.getDrawYGrid()){
+				map.put("drawYGrid", gridOptions.getDrawYGrid());
+			}
 		}
 		map.put("gridLineColor", gridOptions.getGridLineColor());
 		/*
 		 * check per axes options
 		 */
-		//Map<String,Map<Axes,PerAxis>> perAxisConfig = new HashMap<String, Map<Axes,PerAxis>>(3);
 		List<PerAxis> perAxesList = gridOptions.getAxisGridOptions();
 		if(perAxesList != null){
 			Map<Axes,PerAxis> tmp = new HashMap<Axes, PerAxis>(3);
@@ -312,15 +296,13 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		if(configurations != null){
 			String clickHandler = configurations.getClickHandler();
 			if(clickHandler != null && !clickHandler.isEmpty()){
-				ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.EVENT_ANNOCLICKED, graphJSVar, null);
-			    String click = dygraph.getClientBehaviors().get(Dygraph.EVENT_ANNOCLICKED).get(0).getScript(behaviorContext);
+			    String annoClick = getScript(context, dygraph, Dygraph.EVENT_ANNOCLICKED, graphJSVar);
 				
-				map.put("annotationClickHandler", "dyAnnotationClickHandlerFn('"+clickHandler+"',\""+click+"\",'"+graphJSVar+"')");
+				map.put("annotationClickHandler", "dyAnnotationClickHandlerFn('"+clickHandler+"',\""+annoClick+"\",'"+graphJSVar+"')");
 			}
 			String dblClickHandler = configurations.getDblClickHandler();
 			if(dblClickHandler != null && !dblClickHandler.isEmpty()){
-				ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, Dygraph.EVENT_ANNODBLCLICKED, graphJSVar, null);
-			    String dblclick = dygraph.getClientBehaviors().get(Dygraph.EVENT_ANNODBLCLICKED).get(0).getScript(behaviorContext);
+			    String dblclick = getScript(context, dygraph, Dygraph.EVENT_ANNODBLCLICKED, graphJSVar);
 				
 				map.put("annotationDblClickHandler", "dyAnnotationDblClickHandlerFn('"+clickHandler+"',\""+dblclick+"\",'"+graphJSVar+"')");
 			}
@@ -646,4 +628,9 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
         }
 	}
 
+	public String getScript(FacesContext context, Dygraph dygraph, String event, String graphJSVar){
+		ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, event, graphJSVar, null);
+	    String eventJs = dygraph.getClientBehaviors().get(event).get(0).getScript(behaviorContext);
+	    return eventJs;
+	}
 }
