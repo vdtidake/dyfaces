@@ -110,3 +110,12 @@ var dyZoomCallbackFn = function(userCallback,ajaxFn,graphId) {
 		 }
 	 }
 }
+
+var dyValueFormatterFn = function(userCallback) {
+	 return function(num , opts, dygraph) {
+		 if(userCallback != ''){
+				var funcCall = userCallback + "(num , opts, dygraph);";
+				eval(funcCall);
+		 }
+	 }
+}

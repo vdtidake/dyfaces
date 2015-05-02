@@ -12,6 +12,7 @@ import org.dyfaces.data.api.GridOptions;
 import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.SeriesColorOptions;
+import org.dyfaces.data.api.SeriesOptions;
 import org.dyfaces.exception.EmptyDataSetException;
 import org.dyfaces.exception.HighlightRegionException;
 
@@ -31,11 +32,15 @@ public class DyDataSeries implements Serializable,DataSeries{
 	/**
 	 * Data Series Colors
 	 */
-	private SeriesColorOptions seriesOptions;
+	private SeriesColorOptions seriesColorOptions;
 	/**
 	 * Grid
 	 */
 	private GridOptions gridOptions;
+	/**
+	 * 
+	 */
+	private SeriesOptions seriesOptions;
 	
 	public DyDataSeries(){
 		dataPoints = new LinkedList<Point>();
@@ -105,11 +110,11 @@ public class DyDataSeries implements Serializable,DataSeries{
 	}
 
 	public SeriesColorOptions getSeriesColorOptions() {
-		return seriesOptions;
+		return seriesColorOptions;
 	}
 
-	public void setSeriesColorOptions(SeriesColorOptions seriesOptions) {
-		this.seriesOptions = seriesOptions;
+	public void setSeriesColorOptions(SeriesColorOptions seriesColorOptions) {
+		this.seriesColorOptions = seriesColorOptions;
 	}
 
 	public GridOptions getGridOptions() {
@@ -118,6 +123,14 @@ public class DyDataSeries implements Serializable,DataSeries{
 
 	public void setGridOptions(GridOptions gridOptions) {
 		this.gridOptions = gridOptions;
+	}
+
+	public SeriesOptions getSeriesOptions() {
+		return seriesOptions;
+	}
+
+	public void setSeriesOptions(SeriesOptions seriesOptions) {
+		this.seriesOptions = seriesOptions;
 	}
 
 	
