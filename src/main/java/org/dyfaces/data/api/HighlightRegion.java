@@ -12,7 +12,7 @@ public class HighlightRegion implements Comparable<HighlightRegion>,Serializable
 	private static final long serialVersionUID = 4057949772485070364L;
 	private Object minX;
 	private Object maxX;
-	private String hexColor="#FFFF66";
+	private String hexColor="#CCEBD6";//FFE6E6
 	
 	
 	public HighlightRegion(Object minX, Object maxX) {

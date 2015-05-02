@@ -252,6 +252,9 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 	}
 	
 	private void setGridOptions(GridOptions gridOptions, Map<String, Object> map){
+		if(gridOptions == null){
+			return;
+		}
 		map.put("drawGrid", gridOptions.getDrawGrid());
 		if(gridOptions.getDrawGrid()){
 			if(!gridOptions.getDrawXGrid()){

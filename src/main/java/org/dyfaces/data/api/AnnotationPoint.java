@@ -16,7 +16,7 @@ public class AnnotationPoint implements Serializable{
     private Integer height;
     private Integer tickHeight;
     private String cssClass;
-    private Boolean attachAtBottom;
+    private Boolean attachAtBottom=Boolean.FALSE;
     
 	public AnnotationPoint(Object x, String shortText,String text) {
 		super();
