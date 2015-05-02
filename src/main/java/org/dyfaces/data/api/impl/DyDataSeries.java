@@ -13,6 +13,7 @@ import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.SeriesColorOptions;
 import org.dyfaces.exception.EmptyDataSetException;
+import org.dyfaces.exception.HighlightRegionException;
 
 public class DyDataSeries implements Serializable,DataSeries{
 	/**
@@ -57,7 +58,7 @@ public class DyDataSeries implements Serializable,DataSeries{
 
 	public void addAllDataPoint(Number[][] dyPoint){
 		if(dyPoint == null || dyPoint.length == 0){
-			throw new EmptyDataSetException("Dataset cannot be null or emplty");
+			throw new EmptyDataSetException("Dataset cannot be null or empty");
 		}
 		for (Number[] numbers : dyPoint) {
 			dataPoints.add(new DyPoint(numbers[0], numbers[1]));
@@ -85,6 +86,7 @@ public class DyDataSeries implements Serializable,DataSeries{
 			for (HighlightRegion region : highlightRegions) {
 				if(!region.validate()){
 					//TODO Throw custom exception here
+					throw new HighlightRegionException("highlight region start point cannot be less than end point");
 				}
 			}
 			Collections.sort(highlightRegions);

@@ -1,6 +1,7 @@
 package org.dyfaces.data.api;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.Date;
 
 import org.dyfaces.DyConstants;
@@ -50,9 +51,16 @@ public class HighlightRegion implements Comparable<HighlightRegion>,Serializable
 			} else {
 				return 0;
 			}
-		}else if(index1 instanceof Date && index2 instanceof Date){
-			Date no1 = (Date) index1;
-			Date no2 = (Date) index2;
+		}else if(index1 instanceof String && index2 instanceof String){
+			Date no1 = null;
+			Date no2 = null;
+			try {
+				no1 = DyConstants.dateFormat.parse((String) index1);
+				no2 = DyConstants.dateFormat.parse((String) index2);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			
 			if (no1.before(no2)) {
 				return 1;
 			} else if (no1.after(no2)) {
@@ -66,17 +74,24 @@ public class HighlightRegion implements Comparable<HighlightRegion>,Serializable
 	}
 
 	public boolean validate() {
-		if(minX instanceof Number && minX instanceof Number){
+		if(minX instanceof Number && maxX instanceof Number){
 			Number no1 = (Number) minX;
-			Number no2 = (Number) minX;
+			Number no2 = (Number) maxX;
 			
 			if (no1.doubleValue() > no2.doubleValue()) {
 				return false;
 			}
 			return true;
-		}else if(minX instanceof Date && minX instanceof Date){
-			Date no1 = (Date) minX;
-			Date no2 = (Date) minX;
+		}else if(minX instanceof String && maxX instanceof String){
+			Date no1 = null;
+			Date no2 = null;
+			try {
+				no1 = DyConstants.dateFormat.parse((String) minX);
+				no2 = DyConstants.dateFormat.parse((String) maxX);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			
 			if (no1.after(no2)) {
 				return false;
 			}
