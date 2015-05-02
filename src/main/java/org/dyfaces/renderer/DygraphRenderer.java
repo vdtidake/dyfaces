@@ -634,6 +634,6 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 	public String getScript(FacesContext context, Dygraph dygraph, String event, String graphJSVar){
 		ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, dygraph, event, graphJSVar, null);
 	    String eventJs = dygraph.getClientBehaviors().get(event).get(0).getScript(behaviorContext);
-	    return eventJs;
+	    return eventJs.replaceAll("\"", "'");
 	}
 }
