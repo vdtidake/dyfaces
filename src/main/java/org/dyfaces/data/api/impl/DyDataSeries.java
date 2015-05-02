@@ -12,6 +12,7 @@ import org.dyfaces.data.api.GridOptions;
 import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.SeriesColorOptions;
+import org.dyfaces.exception.EmptyDataSetException;
 
 public class DyDataSeries implements Serializable,DataSeries{
 	/**
@@ -54,6 +55,14 @@ public class DyDataSeries implements Serializable,DataSeries{
 		dataPoints.add(dyPoint);
 	}
 
+	public void addAllDataPoint(Number[][] dyPoint){
+		if(dyPoint == null || dyPoint.length == 0){
+			throw new EmptyDataSetException("Dataset cannot be null or emplty");
+		}
+		for (Number[] numbers : dyPoint) {
+			dataPoints.add(new DyPoint(numbers[0], numbers[1]));
+		}
+	}
 	public List<AnnotationPoint> getAnnotations() {
 		return annotations;
 	}
