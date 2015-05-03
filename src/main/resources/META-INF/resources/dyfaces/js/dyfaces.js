@@ -36,7 +36,14 @@ function dyHighlightRegionHelper(canvas, area, g, start, end, fill) {
 }
 var dyClickCallbackFn = function(userCallback,ajaxFn,graphId) {
 	 return function(event, x, points) {
-		 $('#'+graphId+'closestPoints').val(JSON.stringify(points));
+		 /**
+		  * remove json circular reference (Chrome bug)
+		  */
+		 var pointsJson = [];
+		 _.each(points, function(d){
+			 pointsJson.push({canvasx: d.canvasx,canvasy: d.canvasy,idx: d.idx,name: d.name,x: d.x,xval: d.xval,y: d.y,yval: d.yval});
+		 });
+		 $('#'+graphId+'closestPoints').val(JSON.stringify(pointsJson));
 		 if(ajaxFn != ''){
 				eval(ajaxFn);
 		  }
@@ -61,6 +68,10 @@ var dyPointClickCallbackFn = function(userCallback,ajaxFn,graphId) {
 var dyAnnotationClickHandlerFn = function(userCallback,ajaxFn,graphId) {
 	 return function(annotation, point, dygraph, event) {
 		 if(userCallback != ''){
+			 /**
+			  * remove json circular reference (Chrome bug)
+			  */
+			 annotation.div=null;
 			 $('#'+graphId+'annotationPoint').val(JSON.stringify(annotation));
 			 $('#'+graphId+'selectedPoint').val(JSON.stringify(point));
 			 if(ajaxFn != ''){
