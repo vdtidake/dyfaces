@@ -130,3 +130,10 @@ var dyValueFormatterFn = function(userCallback) {
 		 }
 	 }
 }
+
+var dyRollPeriodChangeFn = function(graph,rollPeriodVal){
+	if(!($.isNumeric(rollPeriodVal))){
+		return;
+	}
+	graph.updateOptions({rollPeriod:parseInt(rollPeriodVal)});
+}

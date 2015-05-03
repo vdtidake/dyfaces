@@ -142,6 +142,15 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		writer.write("return "+graphJSVar+"})();");
 		writer.endElement("script");
 		
+		/**
+		 * roll period textbox binding
+		 */
+		writer.startElement("script", dygraph);
+		writer.writeAttribute("type", "text/javascript", null);
+		
+		writer.write("$('#"+graphJSVar+" :input').bind('keyup',function(){dyRollPeriodChangeFn("+graphJSVar+",this.value);});");
+		
+		writer.endElement("script");
 		
 	}
 
