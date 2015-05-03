@@ -82,7 +82,7 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			dataInputs++;
 		}
 
-		if (dataInputs <= 0 && dataInputs > 1) {
+		if (dataInputs != 1 || dyDataModel == null) {
 			throw new InvalidDataInputException("no or more than one data inputs found for graph");
 		}
 		
