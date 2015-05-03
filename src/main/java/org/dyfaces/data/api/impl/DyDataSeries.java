@@ -42,15 +42,13 @@ public class DyDataSeries implements Serializable,DataSeries{
 	 */
 	private SeriesOptions seriesOptions;
 	
-	public DyDataSeries(){
+	public DyDataSeries(String series){
+		this.series=series;
 		dataPoints = new LinkedList<Point>();
 	}
 	
 	public String getSeries() {
 		return series;
-	}
-	public void setSeries(String series) {
-		this.series = series;
 	}
 
 	public List<Point> getDataPoints() {

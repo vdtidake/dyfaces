@@ -5,8 +5,6 @@ import java.util.List;
 public interface DataSeries {
 	public String getSeries();
 
-	public void setSeries(String series);
-
 	public List<Point> getDataPoints();
 
 	public void addDataPoint(Point point);
@@ -34,4 +32,6 @@ public interface DataSeries {
 	public SeriesOptions getSeriesOptions();
 
 	public void setSeriesOptions(SeriesOptions seriesOptions);
+	
+	public void addAllDataPoint(Number[][] dyPoint);
 }

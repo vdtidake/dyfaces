@@ -253,7 +253,7 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 				setSeriesOptions(seriesOptions);
 			}
 		}
-		if(!seriesLabels.isEmpty()){
+		if(seriesLabels.size() > 1){
 			setLabels(seriesLabels);
 		}
 		if(seriesCount != seriesLabels.size()-1){
@@ -290,7 +290,7 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 		if (name != null && !name.isEmpty()) {
 			seriesLabels.add(name);
 		}
-		if(!seriesLabels.isEmpty()){
+		if(seriesLabels.size() > 1){
 			setLabels(seriesLabels);
 		}
 		/**

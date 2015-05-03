@@ -545,16 +545,24 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		 * attributes from datamodel and dataseries
 		 */
 		if(attributes.getXlabel() == null){
-			attributes.setXlabel(dygraph.getXlabel());
+			String xl = dygraph.getXlabel();
+			if(xl != null && !xl.isEmpty())
+				attributes.setXlabel(xl);
 		}
 		if(attributes.getYlabel() == null){
-			attributes.setYlabel(dygraph.getYlabel());
+			String yl = dygraph.getYlabel();
+			if(yl != null && !yl.isEmpty())
+				attributes.setYlabel(yl);
 		}
 		if(attributes.getLabels() == null){
-			attributes.setLabels(dygraph.getLabels());
+			List<String> lbls = dygraph.getLabels();
+			if(lbls != null && !lbls.isEmpty())
+				attributes.setLabels(lbls);
 		}
 		if(attributes.getTitle() == null){
-			attributes.setTitle(dygraph.getTitle());
+			String ttl = dygraph.getTitle();
+			if(ttl != null && !ttl.isEmpty())
+				attributes.setTitle(ttl);
 		}
 		attributes.setWidth(dygraph.getWidth());
 		attributes.setHeight(dygraph.getHeight());
