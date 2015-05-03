@@ -106,13 +106,12 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		/*
 		 * get Dygraph data defined with either value or model attribute
 		 */
-		Map<String,Object> datamodelAttributes = new HashMap<String, Object>(3);
-		StringBuilder data = getDyGraphData(dygraph,datamodelAttributes);
-		graphBuilder.append(data.toString());
+		StringBuilder data = getDyGraphData(dygraph);
+		graphBuilder.append(data);
 		/*
 		 * get Dygraph attributes
 		 */
-		String dygraphAttributes = getDygraphAttribures(dygraph,datamodelAttributes);
+		String dygraphAttributes = getDygraphAttribures(dygraph);
 		
 		/*
 		 * append graph attributes to Dygraph
@@ -373,31 +372,19 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 	 * @param dygraph
 	 * @return parsed Dygraph data
 	 */
-	private StringBuilder getDyGraphData(Dygraph dygraph,Map<String,Object> datamodelAttributes) {
+	private StringBuilder getDyGraphData(Dygraph dygraph) {
 		Object dataModel= dygraph.getDyDataModel();
 		Map<Object,List<Number>> seriesMap = new HashMap<Object, List<Number>>();
 		StringBuilder data = new StringBuilder("[");
 		
+		/**
+		 * datamodel
+		 */
 		if(dataModel instanceof DataModel){
-			DataModel dyDataModel = (DyDataModel) dataModel;
+			DataModel dyDataModel = (DataModel) dataModel;
 			
 			if(dyDataModel != null){
-				if(dyDataModel.getGraphTitle() != null){
-					datamodelAttributes.put("title", dyDataModel.getGraphTitle());
-				}
-				if(dyDataModel.getxAxisLable() != null){
-					datamodelAttributes.put("xlabel", dyDataModel.getxAxisLable());
-				}
-				if(dyDataModel.getyAxisLable() != null){
-					datamodelAttributes.put("ylabel", dyDataModel.getyAxisLable());
-				}
-				List<String> seriesLabels = new ArrayList<String>(dyDataModel.getDataSeries().size());
-				seriesLabels.add("");
 				for (DataSeries series : dyDataModel.getDataSeries()) {
-					String name = series.getSeries();
-					if(name != null && !name.isEmpty()){
-						seriesLabels.add(name);
-					}
 					List<Point> points = series.getDataPoints();
 					for (Point point : points) {
 						if(seriesMap.containsKey(point.getxValue())){
@@ -409,9 +396,6 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 							seriesMap.put(point.getxValue(), tmp);
 						}
 					}
-				}
-				if(!seriesLabels.isEmpty()){
-					datamodelAttributes.put("labels", seriesLabels);
 				}
 			}
 			
@@ -485,34 +469,19 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			
 		}else if(dataModel instanceof DataSeries){
 			DataSeries dataseries = (DataSeries) dataModel;
-			List<String> seriesLabels = new ArrayList<String>(dataseries.getDataPoints().size());
-			seriesLabels.add("");
 			if(dataseries != null){
-				String name = dataseries.getSeries();
-				if(name != null && !name.isEmpty()){
-					seriesLabels.add(name);
-				}
 				List<Point> points = dataseries.getDataPoints();
-				Collections.sort(points);
-				for (Point point : points) {
-					if(point.getxValue() instanceof Date){
-						data.append(Arrays.asList(DyUtils.getJSDyDate(point.getxValue()),point.getyValue())).append(",");
-					}else{
-						data.append(Arrays.asList(point.getxValue(),point.getyValue())).append(",");
+				if(points != null){
+					Collections.sort(points);
+					for (Point point : points) {
+						if(point.getxValue() instanceof Date){
+							data.append(Arrays.asList(DyUtils.getJSDyDate(point.getxValue()),point.getyValue())).append(",");
+						}else{
+							data.append(Arrays.asList(point.getxValue(),point.getyValue())).append(",");
+						}
+						
 					}
 					
-				}
-				if(!seriesLabels.isEmpty()){
-					datamodelAttributes.put("labels", seriesLabels);
-				}
-				
-				List<AnnotationPoint> annotationPoints = dataseries.getAnnotations();
-				if(annotationPoints != null && !annotationPoints.isEmpty()){
-					dygraph.setAnnotations(annotationPoints);
-				}
-				List<HighlightRegion> highlightRegions = dataseries.getHighlightRegions();
-				if(highlightRegions != null && !highlightRegions.isEmpty()){
-					dygraph.setHighlightRegions(highlightRegions);
 				}
 			}
 			
@@ -527,27 +496,26 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 	 * @param dygraph
 	 * @return Json string of Dygraph attributes
 	 */
-	private String getDygraphAttribures(Dygraph dygraph,Map<String,Object> datamodelAttributes) {
+	private String getDygraphAttribures(Dygraph dygraph) {
 		Map<String,Object> attr = dygraph.getAttributes();
 		DyAttributes attributes = builder.create().fromJson(gson.toJson(attr), DyAttributes.class);
-		if(!datamodelAttributes.isEmpty()){
-			if(datamodelAttributes.containsKey("title")){
-				attributes.setTitle((String) datamodelAttributes.get("title"));
-			}
-			if (datamodelAttributes.containsKey("xlabel")) {
-				attributes.setXlabel((String) datamodelAttributes.get("xlabel"));
-			}
-			if (datamodelAttributes.containsKey("ylabel")) {
-				attributes.setYlabel((String) datamodelAttributes.get("ylabel"));
-			}
-			if (datamodelAttributes.containsKey("labels")) {
-				List<String> labels = List.class.cast(datamodelAttributes.get("labels"));
-				if(labels.size() > 1){
-					attributes.setLabels(labels);
-				}
-			}
-			
+		
+		/*
+		 * attributes from datamodel and dataseries
+		 */
+		if(attributes.getXlabel() == null){
+			attributes.setXlabel(dygraph.getXlabel());
 		}
+		if(attributes.getYlabel() == null){
+			attributes.setYlabel(dygraph.getYlabel());
+		}
+		if(attributes.getLabels() == null){
+			attributes.setLabels(dygraph.getLabels());
+		}
+		if(attributes.getTitle() == null){
+			attributes.setTitle(dygraph.getTitle());
+		}
+		
 		return gson.toJson(attributes);
 	}
 	
