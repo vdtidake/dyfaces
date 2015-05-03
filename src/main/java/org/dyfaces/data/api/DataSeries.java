@@ -30,4 +30,8 @@ public interface DataSeries {
 	public GridOptions getGridOptions();
 	
 	public void setGridOptions(GridOptions gridOptions);
+	
+	public SeriesOptions getSeriesOptions();
+
+	public void setSeriesOptions(SeriesOptions seriesOptions);
 }

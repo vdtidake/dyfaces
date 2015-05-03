@@ -225,6 +225,12 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			callBackMap.putAll(gridOptions);
 		}
 		
+		Map<String,Object> seriesOptions= bindSeriesOptions(context, graphJSVar, dygraph); 
+		
+		if(seriesOptions != null && !seriesOptions.isEmpty()){
+			callBackMap.putAll(seriesOptions);
+		}
+		
 		if(!callBackMap.isEmpty()){
 			graphBuilder.append(graphJSVar).append(".updateOptions(").append(gson.toJsonTree(callBackMap)).append(");");
 			String updateOptions = graphBuilder.toString().replaceAll("\"", "");
@@ -236,6 +242,25 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		}
 	}
 	
+	private Map<String, Object> bindSeriesOptions(FacesContext context,
+			String graphJSVar, Dygraph dygraph) {
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		Object dataModel= dygraph.getDyDataModel();
+		if(dataModel instanceof DataModel){
+			DataModel dyDataModel = (DyDataModel) dataModel;
+			if(dyDataModel != null){
+				List<DataSeries> dataSerieses= dyDataModel.getDataSeries();
+				if(dataSerieses != null){
+					for (DataSeries ds : dataSerieses) {
+						map.put("'"+ds.getSeries()+"'", gson.toJson(ds.getSeriesOptions()));
+					}
+				}
+			}
+		}
+		return map;
+	}
+
 	private Map<String, Object> bindGridOptions(FacesContext context,
 			String graphJSVar, Dygraph dygraph) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -460,19 +485,26 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			/*
 			 * Single Dygraph series with a List<DyPoint>
 			 */
-			List<Point> points = (List<Point>) dataModel;
-			if(points != null && !points.isEmpty()){
-				/*
-				 * sorted on X axis ascending
-				 */
-				Collections.sort(points);
-				for (Point point : points) {
-					if(point.getxValue() instanceof Date){
-						data.append(Arrays.asList(DyUtils.getJSDyDate(point.getxValue()),point.getyValue())).append(",");
-					}else{
-						data.append(Arrays.asList(point.getxValue(),point.getyValue())).append(",");
+			try{
+				List<Point> points = (List<Point>) dataModel;
+				if(points != null && !points.isEmpty()){
+					/*
+					 * sorted on X axis ascending
+					 */
+					Collections.sort(points);
+					for (Point point : points) {
+						if(point.getxValue() instanceof Date){
+							data.append(Arrays.asList(DyUtils.getJSDyDate(point.getxValue()),point.getyValue())).append(",");
+						}else{
+							data.append(Arrays.asList(point.getxValue(),point.getyValue())).append(",");
+						}
+						
 					}
-					
+				}
+			}catch(ClassCastException castException){
+				List<DataSeries> dataSerieses = (List<DataSeries>) dataModel;
+				if(dataSerieses != null && !dataSerieses.isEmpty()){
+					//TODO 
 				}
 			}
 			

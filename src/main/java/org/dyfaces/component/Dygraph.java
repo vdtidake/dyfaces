@@ -26,6 +26,7 @@ import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.SelectedPointDetails;
+import org.dyfaces.data.api.SeriesOptions;
 import org.dyfaces.data.api.impl.DyDataModel;
 import org.dyfaces.event.AnnotationClicked;
 import org.dyfaces.event.GraphClicked;
@@ -202,6 +203,14 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
     	setValue("width", value);
     }
     
+    public SeriesOptions getSeriesOptions() {
+        return (SeriesOptions) getValue("seriesOptions");
+    }
+
+    public void setSeriesOptions(SeriesOptions value) {
+    	setValue("seriesOptions",value);
+    }
+    
 	public DataModel getModel() {
 		DataModel dataModel = (DataModel) getValue("model");
 		
@@ -237,6 +246,11 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			
 			if(highlight != null && !highlight.isEmpty()){
 				highlightRegions.addAll(highlight);
+			}
+			
+			SeriesOptions seriesOptions = tmps.getSeriesOptions();
+			if(seriesOptions != null){
+				setSeriesOptions(seriesOptions);
 			}
 		}
 		if(!seriesLabels.isEmpty()){
