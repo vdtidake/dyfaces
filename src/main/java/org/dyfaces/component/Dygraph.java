@@ -170,6 +170,38 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 		setValue("labels",value);
     }
 	
+	public String getStyle() {
+        return (String) getValue("style");
+    }
+
+    public void setStyle(String value) {
+    	setValue("style",value);
+    }
+    
+    public Integer getHeight() {
+    	Integer h = (Integer) getValue("height");
+        if (h == null) {
+            return 320;
+        }
+        return h;
+    }
+
+    public void setHeight(Integer value) {
+        setValue("height", value);
+    }
+
+    public Integer getWidth() {
+    	Integer w = (Integer) getValue("width");
+        if (w == null) {
+            return 680;
+        }
+        return w;
+    }
+
+    public void setWidth(Integer value) {
+    	setValue("width", value);
+    }
+    
 	public DataModel getModel() {
 		DataModel dataModel = (DataModel) getValue("model");
 		
@@ -307,6 +339,10 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			    	writer.writeAttribute("onclick", click, null);
 			    }
 			}*/
+			 String style = getStyle();
+			 if (style != null) {
+				 writer.writeAttribute("style", style, "style");
+		     }
 			writer.endElement("div");
 			
 			writer.startElement("input", null);

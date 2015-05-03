@@ -515,7 +515,8 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		if(attributes.getTitle() == null){
 			attributes.setTitle(dygraph.getTitle());
 		}
-		
+		attributes.setWidth(dygraph.getWidth());
+		attributes.setHeight(dygraph.getHeight());
 		return gson.toJson(attributes);
 	}
 	

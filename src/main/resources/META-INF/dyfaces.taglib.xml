@@ -25,14 +25,14 @@
 			<type>java.lang.Boolean</type>
 		</attribute>
 		<attribute>
-			<description><![CDATA[width of the viewer frame.]]>
+			<description><![CDATA[width of the graph.]]>
             </description>
 			<name>width</name>
 			<required>false</required>
 			<type>java.lang.Integer</type>
 		</attribute>
 		<attribute>
-			<description><![CDATA[height of the viewer frame.]]>
+			<description><![CDATA[height of the graph.]]>
             </description>
 			<name>height</name>
 			<required>false</required>
@@ -72,6 +72,11 @@
 			<name>xlabel</name>
 			<required>false</required>
 			<type>java.lang.String</type>
+		</attribute>
+		<attribute>
+			<name>labels</name>
+			<required>false</required>
+			<type>java.lang.Object</type>
 		</attribute>
 		<attribute>
             <description><![CDATA[Series of the component]]></description>

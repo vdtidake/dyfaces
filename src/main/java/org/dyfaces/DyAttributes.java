@@ -23,6 +23,10 @@ public class DyAttributes {
 	private Boolean drawGrid=Boolean.TRUE;
 	private Boolean drawXAxis;
 	private Boolean drawYAxis;
+	/*
+	 */
+	private Integer width;
+	private Integer height;
 	
 	public String getLegend() {
 		return legend;
@@ -108,5 +112,19 @@ public class DyAttributes {
 	public void setLabels(List<String> labels) {
 		this.labels = labels;
 	}
+	public Integer getWidth() {
+		return width;
+	}
+	public void setWidth(Integer width) {
+		this.width = width;
+	}
+	public Integer getHeight() {
+		return height;
+	}
+	public void setHeight(Integer height) {
+		this.height = height;
+	}
+	
+	
 		
 }
