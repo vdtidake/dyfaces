@@ -26,7 +26,6 @@ import javax.faces.render.Renderer;
 
 import org.dyfaces.DyAttributes;
 import org.dyfaces.DyCallbacks;
-import org.dyfaces.DyConstants;
 import org.dyfaces.DyConstants.Callback;
 import org.dyfaces.Version;
 import org.dyfaces.component.Dygraph;

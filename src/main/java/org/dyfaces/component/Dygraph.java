@@ -12,7 +12,6 @@ import javax.el.ValueExpression;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIOutput;
 import javax.faces.component.behavior.ClientBehavior;
-import javax.faces.component.behavior.ClientBehaviorContext;
 import javax.faces.component.behavior.ClientBehaviorHolder;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -28,6 +27,7 @@ import org.dyfaces.event.AnnotationClicked;
 import org.dyfaces.event.GraphClicked;
 import org.dyfaces.event.GraphZoomed;
 import org.dyfaces.event.PointClicked;
+import org.dyfaces.exception.InvalidDataInputException;
 
 import com.google.gson.Gson;
 
@@ -64,20 +64,29 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	 * @return dataset with either value or model
 	 */
 	public Object getDyDataModel() {
-		try {
-			Object value = getValue();
-			if(value != null){
-				return value;
-			}
-			Object series = getValue("series");
-			if(series != null){
-				return series;
-			}
-			return  getValue("model");
-		} catch (Exception e) {
-			e.printStackTrace();
+		byte dataInputs = 0;
+		Object dyDataModel = null;
+		Object value = getValue();
+		if (value != null) {
+			dyDataModel = value;
+			dataInputs++;
 		}
-		return null;
+		Object series = getValue("series");
+		if (series != null) {
+			dyDataModel = series;
+			dataInputs++;
+		}
+		Object model = getValue("model");
+		if (model != null) {
+			dyDataModel = model;
+			dataInputs++;
+		}
+
+		if (dataInputs <= 0 && dataInputs > 1) {
+			throw new InvalidDataInputException("no or more than one data inputs found for graph");
+		}
+		
+		return dyDataModel;
 	}
 
 	public List<AnnotationPoint> getAnnotations() {
