@@ -76,6 +76,7 @@ public class DyDataSeries implements Serializable,DataSeries{
 			for (AnnotationPoint annotationPoint : annotations) {
 				annotationPoint.setSeries(series);
 			}
+			setAnnotationConfigurations(new AnnotationConfigurations());
 		}
 		this.annotations = annotations;
 	}

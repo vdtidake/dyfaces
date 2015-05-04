@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.faces.application.ResourceDependencies;
 import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
+import javax.faces.component.behavior.ClientBehavior;
 import javax.faces.component.behavior.ClientBehaviorContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
@@ -329,14 +330,15 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			}
 		}
 		if(configurations != null){
+			Map<String,List<ClientBehavior>> clientBehaviours= dygraph.getClientBehaviors();
 			String clickHandler = configurations.getClickHandler();
-			if(clickHandler != null && !clickHandler.isEmpty()){
+			if((clickHandler != null && !clickHandler.isEmpty()) || clientBehaviours.containsKey(Dygraph.EVENT_ANNOCLICKED)){
 			    String annoClick = getScript(context, dygraph, Dygraph.EVENT_ANNOCLICKED, graphJSVar);
 				
 				map.put("annotationClickHandler", "dyAnnotationClickHandlerFn('"+clickHandler+"',\""+annoClick+"\",'"+graphJSVar+"')");
 			}
 			String dblClickHandler = configurations.getDblClickHandler();
-			if(dblClickHandler != null && !dblClickHandler.isEmpty()){
+			if((dblClickHandler != null && !dblClickHandler.isEmpty()) || clientBehaviours.containsKey(Dygraph.EVENT_ANNODBLCLICKED)){
 			    String dblclick = getScript(context, dygraph, Dygraph.EVENT_ANNODBLCLICKED, graphJSVar);
 				
 				map.put("annotationDblClickHandler", "dyAnnotationDblClickHandlerFn('"+clickHandler+"',\""+dblclick+"\",'"+graphJSVar+"')");
