@@ -27,7 +27,6 @@ import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.SelectedPointDetails;
 import org.dyfaces.data.api.SeriesOptions;
-import org.dyfaces.data.api.impl.DyDataModel;
 import org.dyfaces.event.AnnotationClicked;
 import org.dyfaces.event.GraphClicked;
 import org.dyfaces.event.GraphZoomed;
@@ -123,18 +122,7 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	public void setTooltip(Boolean value) {
 		setValue("tooltip",value);
     }
-	/*public String getSelectedPoint() {
-		return (String) getValue("selectedPoint");
-	}
-	public void setSelectedPoint(String value) {
-		setValue("selectedPoint",value);
-    }
-	public String getClosestPoints() {
-		return (String) getValue("closestPoints");
-	}
-	public void setClosestPoints(String value) {
-		setValue("clickCoordinate",value);
-    }*/
+	
 	public String getVar() {
 		return (String) getValue("var");
 	}
@@ -285,7 +273,7 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 		 * series lables
 		 */
 		List<String> seriesLabels = new ArrayList<String>(2);
-		seriesLabels.add("");
+		seriesLabels.add(dataseries.getSeries());
 		String name = dataseries.getSeries();
 		if (name != null && !name.isEmpty()) {
 			seriesLabels.add(name);
@@ -345,20 +333,16 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			 */
 			writer.startElement("div", this);
 			writer.writeAttribute("id", graphJSVar, null);
-			/*Map<String,List<ClientBehavior>> behaviors = this.getClientBehaviors();
-			for (String eventName : behaviors.keySet()) {
-			    if (this.getEventNames().contains(eventName)) {
-			    	ClientBehaviorContext behaviorContext = ClientBehaviorContext.createClientBehaviorContext(context, this, DEFAULT_EVENT, graphJSVar, null);
-			    	String click = behaviors.get(DEFAULT_EVENT).get(0).getScript(behaviorContext);
-			    	writer.writeAttribute("onclick", click, null);
-			    }
-			}*/
+			
 			 String style = getStyle();
 			 if (style != null) {
 				 writer.writeAttribute("style", style, "style");
 		     }
 			writer.endElement("div");
 			
+			/**
+			 * add hidden input fields for ajax calls
+			 */
 			writer.startElement("input", null);
 			writer.writeAttribute("type", "hidden", null);
 			writer.writeAttribute("id", graphJSVar + "selectedPoint", null);
