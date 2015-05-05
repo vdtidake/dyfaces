@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +26,7 @@ import org.dyfaces.FacesParam;
 import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.HighlightRegion;
+import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.SelectedPointDetails;
 import org.dyfaces.data.api.SeriesOptions;
 import org.dyfaces.event.AnnotationClicked;
@@ -31,6 +34,7 @@ import org.dyfaces.event.GraphClicked;
 import org.dyfaces.event.GraphZoomed;
 import org.dyfaces.event.PointClicked;
 import org.dyfaces.exception.InvalidDataInputException;
+import org.dyfaces.utils.DyUtils;
 
 import com.google.gson.Gson;
 
@@ -64,7 +68,7 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 
 	/**
 	 * 
-	 * @return dataset with either value or model
+	 * @return dataset with either value or dataseries
 	 */
 	public Object getDyDataModel() {
 		byte dataInputs = 0;
@@ -79,12 +83,7 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			dyDataModel = series;
 			dataInputs++;
 		}
-		Object model = getValue("model");
-		if (model != null) {
-			dyDataModel = model;
-			dataInputs++;
-		}
-
+		
 		if (dataInputs != 1 || dyDataModel == null) {
 			throw new InvalidDataInputException("no or more than one data inputs found for graph");
 		}
@@ -198,6 +197,13 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
     	setValue("seriesOptions",value);
     }
     
+    public String getData() {
+		return (String) getValue("data");
+	}
+	public void setData(String value) {
+		setValue("data",value);
+    }
+	
 	public DataSeries getSeries() {
 		DataSeries dataseries = (DataSeries) getValue("series");
 		
@@ -305,8 +311,15 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			writer.writeAttribute("name", graphJSVar + "valueRange", null);
 			writer.endElement("input");
 			
+			writer.startElement("input", null);
+			writer.writeAttribute("type", "hidden", null);
+			writer.writeAttribute("id", graphJSVar + "dataValue", null);
+			writer.writeAttribute("name", graphJSVar + "dataValue", null);
+			writer.endElement("input");
+			
 	 }
-	 @Override
+
+	@Override
 	 public void decode(FacesContext context) {
 		 
 		Map<String, List<ClientBehavior>> behaviors = this.getClientBehaviors();
@@ -376,6 +389,72 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 		}
 	}
 	 
+	/**
+	 * 
+	 * @param dygraph
+	 * @return parsed Dygraph data
+	 */
+	public StringBuilder prepareDygraphData() {
+		Object dataModel= getDyDataModel();
+		StringBuilder data = new StringBuilder("[");
+		
+		if(dataModel instanceof List){
+			/*
+			 * Single Dygraph series with a List<DyPoint>
+			 */
+			try{
+				List<Point> points = (List<Point>) dataModel;
+				if(points != null && !points.isEmpty()){
+					/*
+					 * sorted on X axis ascending
+					 */
+					Collections.sort(points);
+					for (Iterator<Point> iterator = points.iterator(); iterator.hasNext();) {
+						Point point = iterator.next();
+						if(point.getxValue() instanceof Date){
+							data.append(Arrays.asList(DyUtils.getJSDyDate(point.getxValue()),point.getyValue()));
+						}else{
+							data.append(Arrays.asList(point.getxValue(),point.getyValue()));
+						}
+						if(iterator.hasNext()){
+							data.append(",");
+						}
+					}
+					
+				}
+			}catch(ClassCastException castException){
+				List<DataSeries> dataSerieses = (List<DataSeries>) dataModel;
+				if(dataSerieses != null && !dataSerieses.isEmpty()){
+					//TODO 
+				}
+			}
+			
+		}else if(dataModel instanceof DataSeries){
+			DataSeries dataseries = (DataSeries) dataModel;
+			if(dataseries != null){
+				List<Point> points = dataseries.getDataPoints();
+				if(points != null){
+					Collections.sort(points);
+					for (Iterator<Point> iterator = points.iterator(); iterator.hasNext();) {
+						Point point = iterator.next();
+						if(point.getxValue() instanceof Date){
+							data.append(Arrays.asList(DyUtils.getJSDyDate(point.getxValue()),point.getyValue()));
+						}else{
+							data.append(Arrays.asList(point.getxValue(),point.getyValue()));
+						}
+						if(iterator.hasNext()){
+							data.append(",");
+						}
+					}
+					
+				}
+			}
+			
+		}
 	
+		data.append("]");
+		setData(data.toString());
+		return data;
+	}
 	 
 }

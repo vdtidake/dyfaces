@@ -105,8 +105,10 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		/*
 		 * get Dygraph data defined with either value or model attribute
 		 */
-		StringBuilder data = getDyGraphData(dygraph);
-		graphBuilder.append(data);
+		
+		StringBuilder data = dygraph.prepareDygraphData();
+		graphBuilder.append(data).append(",");
+		//graphBuilder.append("function(){ return document.getElementById('"+graphJSVar+"dataValue').value;},");
 		/*
 		 * get Dygraph attributes
 		 */
@@ -361,65 +363,6 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		
 	}
 
-	/**
-	 * 
-	 * @param dygraph
-	 * @return parsed Dygraph data
-	 */
-	private StringBuilder getDyGraphData(Dygraph dygraph) {
-		Object dataModel= dygraph.getDyDataModel();
-		StringBuilder data = new StringBuilder("[");
-		
-		if(dataModel instanceof List){
-			/*
-			 * Single Dygraph series with a List<DyPoint>
-			 */
-			try{
-				List<Point> points = (List<Point>) dataModel;
-				if(points != null && !points.isEmpty()){
-					/*
-					 * sorted on X axis ascending
-					 */
-					Collections.sort(points);
-					for (Point point : points) {
-						if(point.getxValue() instanceof Date){
-							data.append(Arrays.asList(DyUtils.getJSDyDate(point.getxValue()),point.getyValue())).append(",");
-						}else{
-							data.append(Arrays.asList(point.getxValue(),point.getyValue())).append(",");
-						}
-						
-					}
-				}
-			}catch(ClassCastException castException){
-				List<DataSeries> dataSerieses = (List<DataSeries>) dataModel;
-				if(dataSerieses != null && !dataSerieses.isEmpty()){
-					//TODO 
-				}
-			}
-			
-		}else if(dataModel instanceof DataSeries){
-			DataSeries dataseries = (DataSeries) dataModel;
-			if(dataseries != null){
-				List<Point> points = dataseries.getDataPoints();
-				if(points != null){
-					Collections.sort(points);
-					for (Point point : points) {
-						if(point.getxValue() instanceof Date){
-							data.append(Arrays.asList(DyUtils.getJSDyDate(point.getxValue()),point.getyValue())).append(",");
-						}else{
-							data.append(Arrays.asList(point.getxValue(),point.getyValue())).append(",");
-						}
-						
-					}
-					
-				}
-			}
-			
-		}
-	
-		data.append("],");
-		return data;
-	}
 
 	/**
 	 * 
