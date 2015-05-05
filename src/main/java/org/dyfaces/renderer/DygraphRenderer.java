@@ -32,7 +32,6 @@ import org.dyfaces.Version;
 import org.dyfaces.component.Dygraph;
 import org.dyfaces.data.api.AnnotationConfigurations;
 import org.dyfaces.data.api.AnnotationPoint;
-import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.GridOptions;
 import org.dyfaces.data.api.GridOptions.Axes;
@@ -40,7 +39,6 @@ import org.dyfaces.data.api.GridOptions.PerAxis;
 import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.SeriesColorOptions;
-import org.dyfaces.data.api.impl.DyDataModel;
 import org.dyfaces.utils.DyUtils;
 import org.dyfaces.utils.DyfacesUtils;
 
@@ -226,12 +224,6 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			callBackMap.putAll(gridOptions);
 		}
 		
-		Map<String,Object> seriesOptions= bindSeriesOptions(context, graphJSVar, dygraph); 
-		
-		if(seriesOptions != null && !seriesOptions.isEmpty()){
-			callBackMap.putAll(seriesOptions);
-		}
-		
 		if(!callBackMap.isEmpty()){
 			graphBuilder.append(graphJSVar).append(".updateOptions(").append(gson.toJsonTree(callBackMap)).append(");");
 			String updateOptions = graphBuilder.toString().replaceAll("\"", "");
@@ -243,38 +235,13 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		}
 	}
 	
-	private Map<String, Object> bindSeriesOptions(FacesContext context,
-			String graphJSVar, Dygraph dygraph) {
-		
-		Map<String, Object> map = new HashMap<String, Object>();
-		Object dataModel= dygraph.getDyDataModel();
-		if(dataModel instanceof DataModel){
-			DataModel dyDataModel = (DyDataModel) dataModel;
-			if(dyDataModel != null){
-				List<DataSeries> dataSerieses= dyDataModel.getDataSeries();
-				if(dataSerieses != null){
-					for (DataSeries ds : dataSerieses) {
-						map.put("'"+ds.getSeries()+"'", gson.toJson(ds.getSeriesOptions()));
-					}
-				}
-			}
-		}
-		return map;
-	}
 
 	private Map<String, Object> bindGridOptions(FacesContext context,
 			String graphJSVar, Dygraph dygraph) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		GridOptions gridOptions = null;
 		Object dataModel= dygraph.getDyDataModel();
-		if(dataModel instanceof DataModel){
-			DataModel dyDataModel = (DyDataModel) dataModel;
-			if(dyDataModel != null){
-				//TODO Handle for X, Y and Y2
-				gridOptions = dyDataModel.getGridOptions();
-				setGridOptions(gridOptions, map);
-			}
-		}else if(dataModel instanceof DataSeries){
+		if(dataModel instanceof DataSeries){
 			DataSeries dataseries = (DataSeries) dataModel;
 			if(dataseries != null){
 				gridOptions = dataseries.getGridOptions();
@@ -318,12 +285,8 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		Map<String, Object> map = new HashMap<String, Object>();
 		AnnotationConfigurations configurations = null;
 		Object dataModel= dygraph.getDyDataModel();
-		if(dataModel instanceof DataModel){
-			DataModel dyDataModel = (DyDataModel) dataModel;
-			if(dyDataModel != null){
-				configurations = dyDataModel.getAnnotationConfigurations();
-			}
-		}else if(dataModel instanceof DataSeries){
+		
+		if(dataModel instanceof DataSeries){
 			DataSeries dataseries = (DataSeries) dataModel;
 			if(dataseries != null){
 				configurations = dataseries.getAnnotationConfigurations();
@@ -363,12 +326,7 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		SeriesColorOptions colorOptions = null;
 		Object dataModel= dygraph.getDyDataModel();
 		
-		if(dataModel instanceof DataModel){
-			DataModel dyDataModel = (DyDataModel) dataModel;
-			if(dyDataModel != null){
-				colorOptions = dyDataModel.getSeriesColorOptions();
-			}
-		}else if(dataModel instanceof DataSeries){
+		if(dataModel instanceof DataSeries){
 			DataSeries dataseries = (DataSeries) dataModel;
 			if(dataseries != null){
 				colorOptions = dataseries.getSeriesColorOptions();
@@ -410,80 +368,9 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 	 */
 	private StringBuilder getDyGraphData(Dygraph dygraph) {
 		Object dataModel= dygraph.getDyDataModel();
-		Map<Object,List<Number>> seriesMap = new HashMap<Object, List<Number>>();
 		StringBuilder data = new StringBuilder("[");
 		
-		/**
-		 * datamodel
-		 */
-		if(dataModel instanceof DataModel){
-			DataModel dyDataModel = (DataModel) dataModel;
-			
-			if(dyDataModel != null){
-				for (DataSeries series : dyDataModel.getDataSeries()) {
-					List<Point> points = series.getDataPoints();
-					for (Point point : points) {
-						if(seriesMap.containsKey(point.getxValue())){
-							List<Number> tmp = seriesMap.get(point.getxValue());
-							tmp.add(point.getyValue());
-						}else{
-							List<Number> tmp = new ArrayList<Number>();
-							tmp.add(point.getyValue());
-							seriesMap.put(point.getxValue(), tmp);
-						}
-					}
-				}
-			}
-			
-			List<List<Object>> mergedSerieses = new ArrayList<List<Object>>();
-			if(!seriesMap.isEmpty()){
-				for(Map.Entry<Object, List<Number>> entry : seriesMap.entrySet()){
-					Object key = entry.getKey();
-					List<Number> value = entry.getValue();
-					List<Object> dydata= new ArrayList<Object>();
-					dydata.add(0, key);
-					for (int i = 1; i <= value.size(); i++) {
-						dydata.add(i, value.get(i-1));					
-					}
-					mergedSerieses.add(dydata);
-				}
-			}
-			Collections.sort(mergedSerieses, new Comparator<List<Object>>() {
-
-				@Override
-				public int compare(List<Object> d1, List<Object> d2) {
-					Object index1 = d1.get(0);
-					Object index2 = d2.get(0);
-			 
-					if(index1 instanceof Number && index2 instanceof Number){
-						Number no1 = (Number) index1;
-						Number no2 = (Number) index2;
-						
-						if (no1.doubleValue() > no2.doubleValue()) {
-							return 1;
-						} else if (no1.doubleValue() < no2.doubleValue()) {
-							return -1;
-						} else {
-							return 0;
-						}
-					}else if(index1 instanceof Date && index2 instanceof Date){
-						Date no1 = (Date) index1;
-						Date no2 = (Date) index2;
-						if (no1.before(no2)) {
-							return 1;
-						} else if (no1.after(no2)) {
-							return -1;
-						} else {
-							return 0;
-						}
-					}
-					return 0;
-				}
-			});
-			for (List<Object> list : mergedSerieses) {
-				data.append(list).append(",");
-			}
-		}else if(dataModel instanceof List){
+		if(dataModel instanceof List){
 			/*
 			 * Single Dygraph series with a List<DyPoint>
 			 */

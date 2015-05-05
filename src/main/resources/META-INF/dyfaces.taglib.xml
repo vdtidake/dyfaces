@@ -84,12 +84,6 @@
             <required>false</required>
             <type>java.lang.Object</type>
         </attribute>
-		<attribute>
-            <description><![CDATA[Datasource of the component with one or more Dataseries]]></description>
-            <name>model</name>
-            <required>false</required>
-            <type>java.lang.Object</type>
-        </attribute>
         <attribute>
             <description><![CDATA[Datasource of the component can be List<Point> or List<Dataseries>]]></description>
             <name>value</name>

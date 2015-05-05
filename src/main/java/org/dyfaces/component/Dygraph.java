@@ -22,7 +22,6 @@ import javax.faces.event.FacesEvent;
 
 import org.dyfaces.FacesParam;
 import org.dyfaces.data.api.AnnotationPoint;
-import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.SelectedPointDetails;
@@ -199,73 +198,6 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
     	setValue("seriesOptions",value);
     }
     
-	public DataModel getModel() {
-		DataModel dataModel = (DataModel) getValue("model");
-		
-		if(dataModel.getGraphTitle() != null){
-			setTitle(dataModel.getGraphTitle());
-		}
-		if(dataModel.getxAxisLable() != null){
-			setXlabel(dataModel.getxAxisLable());
-		}
-		if(dataModel.getyAxisLable() != null){
-			setYlabel(dataModel.getyAxisLable());
-		}
-		
-		int seriesCount = dataModel.getDataSeries().size();
-		
-		List<AnnotationPoint> annotationPoints = new ArrayList<AnnotationPoint>();
-		List<HighlightRegion> highlightRegions = new ArrayList<HighlightRegion>();
-				
-		List<String> seriesLabels = new ArrayList<String>(seriesCount);
-		seriesLabels.add("");
-		
-		for (DataSeries tmps : dataModel.getDataSeries()) {
-			String name = tmps.getSeries();
-			if(name != null && !name.isEmpty()){
-				seriesLabels.add(name);
-			}
-			
-			List<AnnotationPoint> annotations = tmps.getAnnotations();
-			if(annotations != null && !annotations.isEmpty()){
-				annotationPoints.addAll(annotations);
-			}
-			List<HighlightRegion> highlight = tmps.getHighlightRegions();
-			
-			if(highlight != null && !highlight.isEmpty()){
-				highlightRegions.addAll(highlight);
-			}
-			
-			SeriesOptions seriesOptions = tmps.getSeriesOptions();
-			if(seriesOptions != null){
-				setSeriesOptions(seriesOptions);
-			}
-		}
-		if(seriesLabels.size() > 1){
-			setLabels(seriesLabels);
-		}
-		if(seriesCount != seriesLabels.size()-1){
-			//TODO throw exception
-		}
-		
-		/**
-		 * annotations and highlight points
-		 */
-		if(annotationPoints != null && !annotationPoints.isEmpty()){
-			setAnnotations(annotationPoints);
-		}
-		
-		if(highlightRegions != null && !highlightRegions.isEmpty()){
-			setHighlightRegions(highlightRegions);
-		}
-		
-		return dataModel;
-	}
-	
-	public void setModel(DataModel value) {
-		setValue("model",value);
-    }
-	
 	public DataSeries getSeries() {
 		DataSeries dataseries = (DataSeries) getValue("series");
 		
