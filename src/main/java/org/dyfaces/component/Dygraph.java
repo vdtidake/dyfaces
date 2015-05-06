@@ -204,6 +204,18 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 		setValue("data",value);
     }
 	
+	public Integer getThreshold() {
+		Integer threshold = (Integer) getValue("threshold");
+		if(threshold == null){
+			return 0;
+		}
+		return threshold;
+	}
+
+	public void setThreshold(Integer value) {
+		setValue("threshold", value);
+	}
+	
 	public DataSeries getSeries() {
 		DataSeries dataseries = (DataSeries) getValue("series");
 		
@@ -359,7 +371,7 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 		final Map<String, String> params = context.getExternalContext().getRequestParameterMap();
 		final String clientId = getClientId(context);
 		final BehaviorEvent behaviorEvent = (BehaviorEvent) event;
-
+		
 		final String eventName = params.get(FacesParam.EVENT.getName());
 
 		if (eventName.equals(Dygraph.DEFAULT_EVENT)){
@@ -397,13 +409,19 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	public StringBuilder prepareDygraphData() {
 		Object dataModel= getDyDataModel();
 		StringBuilder data = new StringBuilder("[");
-		
+		Integer threshold = getThreshold();
 		if(dataModel instanceof List){
 			/*
 			 * Single Dygraph series with a List<DyPoint>
 			 */
 			try{
-				List<Point> points = (List<Point>) dataModel;
+				List<Point> pointsTotal = (List<Point>) dataModel;
+				List<Point> points = null;
+				if(threshold > 0){
+					points = DyUtils.desampleData(pointsTotal,threshold);
+				}else{
+					points = pointsTotal;
+				}
 				if(points != null && !points.isEmpty()){
 					/*
 					 * sorted on X axis ascending
@@ -432,7 +450,13 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 		}else if(dataModel instanceof DataSeries){
 			DataSeries dataseries = (DataSeries) dataModel;
 			if(dataseries != null){
-				List<Point> points = dataseries.getDataPoints();
+				List<Point> pointsTotal = dataseries.getDataPoints();
+				List<Point> points = null;
+				if(threshold > 0){
+					points = DyUtils.desampleData(pointsTotal,threshold);
+				}else{
+					points = pointsTotal;
+				}
 				if(points != null){
 					Collections.sort(points);
 					for (Iterator<Point> iterator = points.iterator(); iterator.hasNext();) {
