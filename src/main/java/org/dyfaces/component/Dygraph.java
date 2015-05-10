@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,8 +51,6 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	public static final String EVENT_GRAPHZOOMED = "graphZoomed";
 	private static final Collection<String> EVENTS = Collections.unmodifiableCollection(Arrays.asList(DEFAULT_EVENT,EVENT_POINTCLICKED,EVENT_ANNOCLICKED,EVENT_ANNODBLCLICKED,EVENT_GRAPHZOOMED));
 	private static final Gson gson = new Gson();
-
-	private static final String dyDateFormatter = "valueFormatter: Dygraph.dateString_,axisLabelFormatter: Dygraph.dateAxisFormatter,ticker: Dygraph.dateTicker,";
 	
 	@Override
 	public String getFamily() {
@@ -384,10 +381,8 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 				if(points != null){
 					if(datasetXAxisType.getName().equals(Date.class.getName())){
 						isDate = true;
-						try{
-							Date no1 = (Date) points.get(0).getxValue();
-						}catch(ClassCastException e){
-							//java.lang.Long cannot be cast to java.util.Date
+						Object dataType = points.get(0).getxValue();
+						if(dataType instanceof Number){
 							isLong = true;
 						}
 					}

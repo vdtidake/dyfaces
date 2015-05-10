@@ -1,18 +1,22 @@
 package org.dyfaces.data.api;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dyfaces.utils.DyUtils;
+
 import com.google.gson.annotations.Expose;
 
-public class GridOptions {
+@SuppressWarnings("serial")
+public class GridOptions implements Serializable{
 	/**
 	 * Whether to display gridlines in the chart.
 	 */
-	private Boolean drawGrid = Boolean.TRUE;
-	private Boolean drawXGrid = Boolean.TRUE;
-	private Boolean drawYGrid = Boolean.TRUE;
-	private String gridLineColor="'rgb(128,128,128)'";
+	private Boolean drawGrid;
+	private Boolean drawXGrid;
+	private Boolean drawYGrid;
+	private String gridLineColor;
 	private List<PerAxis> axisGridOptions;
 	
 	public GridOptions(){
@@ -53,8 +57,8 @@ public class GridOptions {
 		 * per axis options
 		 */
 		private transient Axes axis;
-		private Boolean drawGrid = Boolean.TRUE;
-		private String gridLineColor="'rgb(128,128,128)'";
+		private Boolean drawGrid;
+		private String gridLineColor;
 		private Float gridLineWidth;
 		private Boolean independentTicks;
 		private Integer pixelsPerLabel;
@@ -88,7 +92,7 @@ public class GridOptions {
 			return gridLineColor;
 		}
 		public void setGridLineColor(String gridLineColor) {
-			this.gridLineColor = gridLineColor;
+			this.gridLineColor = DyUtils.getEscapedString(gridLineColor);
 		}
 		public Float getGridLineWidth() {
 			return gridLineWidth;

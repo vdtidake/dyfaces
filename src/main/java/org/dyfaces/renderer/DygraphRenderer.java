@@ -21,7 +21,6 @@ import javax.faces.event.PostAddToViewEvent;
 import javax.faces.render.FacesRenderer;
 import javax.faces.render.Renderer;
 
-import org.dyfaces.DyAttributes;
 import org.dyfaces.DyCallbacks;
 import org.dyfaces.DyConstants.Callback;
 import org.dyfaces.Version;
@@ -29,17 +28,16 @@ import org.dyfaces.component.Dygraph;
 import org.dyfaces.data.api.AnnotationConfigurations;
 import org.dyfaces.data.api.AnnotationPoint;
 import org.dyfaces.data.api.DataModel;
-import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.GridOptions;
 import org.dyfaces.data.api.GridOptions.Axes;
 import org.dyfaces.data.api.GridOptions.PerAxis;
 import org.dyfaces.data.api.HighlightRegion;
+import org.dyfaces.utils.DyUtils;
 import org.dyfaces.utils.DyfacesUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 @FacesRenderer(componentFamily = Dygraph.COMPONENT_FAMILY, rendererType = DygraphRenderer.RENDERER_TYPE)
 @ResourceDependencies({
@@ -58,7 +56,6 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 	public static final String RENDERER_TYPE = "org.dyfaces.component.graph.renderer";
 	private static final Gson gson = new Gson();
 	private static final GsonBuilder builder = new GsonBuilder();
-	private static final Gson gsonExopse = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
 	@Override
 	public void decode(FacesContext context, UIComponent component) {
@@ -103,18 +100,16 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		 */
 		
 		StringBuilder data = dygraph.prepareDygraphData();
-		graphBuilder.append(data).append(",");
-		//graphBuilder.append("function(){ return document.getElementById('"+graphJSVar+"dataValue').value;},");
+		graphBuilder.append(data).append(",{");
 		/*
 		 * get Dygraph attributes
 		 */
-		String dygraphAttributes = getDygraphAttribures(dygraph);
+		setDygraphAttribures(dygraph,graphBuilder);
 		
 		/*
 		 * append graph attributes to Dygraph
 		 */
-		graphBuilder.append(dygraphAttributes);
-		graphBuilder.append(");");
+		graphBuilder.append("});");
 		/*
 		 * write all Dygraph script to response
 		 */
@@ -216,11 +211,11 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			callBackMap.putAll(seriesColorOptions);
 		}
 		
-		Map<String,Object> gridOptions= bindGridOptions(context, graphJSVar, dygraph); 
+		/*Map<String,Object> gridOptions= bindGridOptions(context, graphJSVar, dygraph); 
 		
 		if(gridOptions != null && !gridOptions.isEmpty()){
 			callBackMap.putAll(gridOptions);
-		}
+		}*/
 		
 		if(!callBackMap.isEmpty()){
 			graphBuilder.append(graphJSVar).append(".updateOptions(").append(gson.toJsonTree(callBackMap)).append(");");
@@ -233,34 +228,29 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		}
 	}
 	
-
-	private Map<String, Object> bindGridOptions(FacesContext context,
-			String graphJSVar, Dygraph dygraph) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		GridOptions gridOptions = null;
-		DataModel dataModel= (DataModel) dygraph.getValue();
-		
-		if(dataModel != null){
-			gridOptions = dataModel.getGridOptions();
-			setGridOptions(gridOptions, map);
-		}
-		return map;
-	}
 	
-	private void setGridOptions(GridOptions gridOptions, Map<String, Object> map){
-		if(gridOptions == null){
-			return;
+	private void setGridOptions(Dygraph dygraph,StringBuilder graphBuilder){
+		DataModel dataModel = (DataModel) dygraph.getValue();
+		GridOptions gridOptions = dataModel.getGridOptions();
+		
+		Boolean drawGrid = gridOptions.getDrawGrid();
+		if(drawGrid != null){
+			graphBuilder.append(DyUtils.getAttribute("drawGrid", drawGrid));
 		}
-		map.put("drawGrid", gridOptions.getDrawGrid());
-		if(gridOptions.getDrawGrid()){
-			if(!gridOptions.getDrawXGrid()){
-				map.put("drawXGrid", gridOptions.getDrawXGrid());
+		if(drawGrid != null && drawGrid){
+			Boolean drawXGrid = gridOptions.getDrawXGrid();
+			if(drawXGrid != null && !drawXGrid){
+				graphBuilder.append(DyUtils.getAttribute("drawXGrid", drawGrid));
 			}
-			if(!gridOptions.getDrawYGrid()){
-				map.put("drawYGrid", gridOptions.getDrawYGrid());
+			Boolean drawYGrid = gridOptions.getDrawYGrid();
+			if(drawYGrid != null && !drawYGrid){
+				graphBuilder.append(DyUtils.getAttribute("drawYGrid", drawGrid));
 			}
 		}
-		map.put("gridLineColor", gridOptions.getGridLineColor());
+		String gridLineColor = gridOptions.getGridLineColor();
+		if(gridLineColor != null){
+			graphBuilder.append(DyUtils.getAttribute("gridLineColor", gridLineColor));
+		}
 		/*
 		 * check per axes options
 		 */
@@ -268,11 +258,14 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		if(perAxesList != null){
 			Map<Axes,PerAxis> tmp = new HashMap<Axes, PerAxis>(3);
 			for (PerAxis perAxis : perAxesList) {
+				if(perAxis.getAxis() == Axes.x && dygraph.isDateAxis()){
+					perAxis.setValueFormatter("Dygraph.dateString_");
+					perAxis.setAxisLabelFormatter("Dygraph.dateAxisFormatter");
+					perAxis.setTicker("Dygraph.dateTicker");
+				}
 				tmp.put(perAxis.getAxis(), perAxis);
 			}
-			if(!tmp.isEmpty()){
-				map.put("axes",gson.toJson(tmp).replaceAll("\"", "'"));
-			}
+			graphBuilder.append(DyUtils.getAttribute("axes", tmp));
 		}
 		
 	}
@@ -358,40 +351,26 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 	 * @param dygraph
 	 * @return Json string of Dygraph attributes
 	 */
-	private String getDygraphAttribures(Dygraph dygraph) {
-		Map<String,Object> attr = dygraph.getAttributes();
-		DyAttributes attributes = builder.create().fromJson(gson.toJson(attr), DyAttributes.class);
+	private void setDygraphAttribures(Dygraph dygraph,StringBuilder graphBuilder) {
 		
-		/*
-		 * attributes from datamodel and dataseries
-		 */
-		if(attributes.getXlabel() == null){
-			String xl = dygraph.getXlabel();
-			if(xl != null && !xl.isEmpty())
-				attributes.setXlabel(xl);
+		graphBuilder.append(DyUtils.getAttribute("width", dygraph.getWidth()));
+		graphBuilder.append(DyUtils.getAttribute("height", dygraph.getHeight()));
+		graphBuilder.append(DyUtils.getAttribute("labels", dygraph.getLabels()));
+
+		String xl = dygraph.getXlabel();
+		if(xl != null && !xl.isEmpty()){
+			graphBuilder.append(DyUtils.getAttribute("xlabel", xl));
 		}
-		if(attributes.getYlabel() == null){
-			String yl = dygraph.getYlabel();
-			if(yl != null && !yl.isEmpty())
-				attributes.setYlabel(yl);
+		String yl = dygraph.getYlabel();
+		if(yl != null && !yl.isEmpty()){
+			graphBuilder.append(DyUtils.getAttribute("ylabel", yl));
 		}
-		if(attributes.getLabels() == null){
-			List<String> lbls = dygraph.getLabels();
-			if(lbls != null && !lbls.isEmpty())
-				attributes.setLabels(lbls);
+		String ttl = dygraph.getTitle();
+		if(ttl != null && !ttl.isEmpty()){
+			graphBuilder.append(DyUtils.getAttribute("title", ttl));
 		}
-		if(attributes.getTitle() == null){
-			String ttl = dygraph.getTitle();
-			if(ttl != null && !ttl.isEmpty())
-				attributes.setTitle(ttl);
-		}
-		attributes.setWidth(dygraph.getWidth());
-		attributes.setHeight(dygraph.getHeight());
-		JsonElement jsonElement =  gson.toJsonTree(attributes);
-		if(dygraph.isDateAxis()){
-			jsonElement.getAsJsonObject().addProperty("axes", "{x: {valueFormatter: Dygraph.dateString_,axisLabelFormatter: Dygraph.dateAxisFormatter,ticker: Dygraph.dateTicker}}");
-		}
-		return gson.toJson(jsonElement).replaceAll("\"", "");
+		
+		setGridOptions(dygraph,graphBuilder);
 	}
 	
 	/**

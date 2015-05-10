@@ -3,15 +3,23 @@ package org.dyfaces.utils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.dyfaces.DyConstants;
+import org.dyfaces.component.Dygraph;
 import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.impl.DyPoint;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import eu.bengreen.data.utility.DownSampleImpl;
 
 public class DyUtils {
 
+	private static final Gson gson = new Gson();
+	private static final GsonBuilder gsonbuilder = new GsonBuilder().disableHtmlEscaping();
+	
 	public static String getDyDate(Object date){
 		return DyConstants.dateFormat.format(Date.class.cast(date));
 	}
@@ -55,5 +63,23 @@ public class DyUtils {
 			}
 		}
 		return desamplePoints;
+	}
+	
+	public static String getAttribute(String name, Object value){
+		StringBuilder builder = new StringBuilder();
+		if(value instanceof String){
+			builder.append(name).append(":").append("'").append(value).append("'").append(",");
+		}else if(value instanceof List){
+			builder.append(name).append(":").append(gson.toJson(value)).append(",");
+		}else if(value instanceof Map){
+			builder.append(name).append(":").append(gsonbuilder.create().toJson(value).replaceAll("\"", "")).append(",");
+		}else{
+			builder.append(name).append(":").append(value).append(",");
+		}
+		return builder.toString();
+	}
+
+	public static String getEscapedString(String str) {
+		 return new StringBuilder("'").append(str).append("'").toString();
 	}
 }
