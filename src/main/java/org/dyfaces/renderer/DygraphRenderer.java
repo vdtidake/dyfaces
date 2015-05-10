@@ -1,11 +1,7 @@
 package org.dyfaces.renderer;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,18 +28,18 @@ import org.dyfaces.Version;
 import org.dyfaces.component.Dygraph;
 import org.dyfaces.data.api.AnnotationConfigurations;
 import org.dyfaces.data.api.AnnotationPoint;
+import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.GridOptions;
 import org.dyfaces.data.api.GridOptions.Axes;
 import org.dyfaces.data.api.GridOptions.PerAxis;
 import org.dyfaces.data.api.HighlightRegion;
-import org.dyfaces.data.api.Point;
-import org.dyfaces.data.api.SeriesColorOptions;
-import org.dyfaces.utils.DyUtils;
 import org.dyfaces.utils.DyfacesUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 @FacesRenderer(componentFamily = Dygraph.COMPONENT_FAMILY, rendererType = DygraphRenderer.RENDERER_TYPE)
 @ResourceDependencies({
@@ -242,13 +238,11 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			String graphJSVar, Dygraph dygraph) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		GridOptions gridOptions = null;
-		Object dataModel= dygraph.getDyDataModel();
-		if(dataModel instanceof DataSeries){
-			DataSeries dataseries = (DataSeries) dataModel;
-			if(dataseries != null){
-				gridOptions = dataseries.getGridOptions();
-				setGridOptions(gridOptions, map);
-			}
+		DataModel dataModel= (DataModel) dygraph.getValue();
+		
+		if(dataModel != null){
+			gridOptions = dataModel.getGridOptions();
+			setGridOptions(gridOptions, map);
 		}
 		return map;
 	}
@@ -286,14 +280,9 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 	private Map<String, Object> bindAnnotationConfiurations(FacesContext context,String graphJSVar,Dygraph dygraph) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		AnnotationConfigurations configurations = null;
-		Object dataModel= dygraph.getDyDataModel();
+		DataModel dataModel= (DataModel) dygraph.getValue();
+		configurations = dataModel.getAnnotationConfigurations();
 		
-		if(dataModel instanceof DataSeries){
-			DataSeries dataseries = (DataSeries) dataModel;
-			if(dataseries != null){
-				configurations = dataseries.getAnnotationConfigurations();
-			}
-		}
 		if(configurations != null){
 			Map<String,List<ClientBehavior>> clientBehaviours= dygraph.getClientBehaviors();
 			String clickHandler = configurations.getClickHandler();
@@ -325,7 +314,7 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 	private Map<String, Object> bindSeriesColorOptions(FacesContext context,
 			String graphJSVar, Dygraph dygraph) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		SeriesColorOptions colorOptions = null;
+		/*SeriesColorOptions colorOptions = null;
 		Object dataModel= dygraph.getDyDataModel();
 		
 		if(dataModel instanceof DataSeries){
@@ -345,7 +334,7 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			map.put("fillAlpha", fillAlpha);
 			Float colorSaturation = colorOptions.getColorSaturation();
 			map.put("colorSaturation ", colorSaturation);
-		}
+		}*/
 		return map;
 	}
 
@@ -398,7 +387,11 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		}
 		attributes.setWidth(dygraph.getWidth());
 		attributes.setHeight(dygraph.getHeight());
-		return gson.toJson(attributes);
+		JsonElement jsonElement =  gson.toJsonTree(attributes);
+		if(dygraph.isDateAxis()){
+			jsonElement.getAsJsonObject().addProperty("axes", "{x: {valueFormatter: Dygraph.dateString_,axisLabelFormatter: Dygraph.dateAxisFormatter,ticker: Dygraph.dateTicker}}");
+		}
+		return gson.toJson(jsonElement).replaceAll("\"", "");
 	}
 	
 	/**

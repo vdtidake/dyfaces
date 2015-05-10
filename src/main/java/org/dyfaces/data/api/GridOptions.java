@@ -60,6 +60,10 @@ public class GridOptions {
 		private Integer pixelsPerLabel;
 		private Number[] gridLinePattern;
 		
+		private String valueFormatter;
+		private String axisLabelFormatter;
+		private String ticker;
+		
 		public PerAxis(){
 			
 		}
@@ -110,7 +114,30 @@ public class GridOptions {
 		public void setGridLinePattern(Number[] gridLinePattern) {
 			this.gridLinePattern = gridLinePattern;
 		}
-		
+
+		public String getValueFormatter() {
+			return valueFormatter;
+		}
+
+		public void setValueFormatter(String valueFormatter) {
+			this.valueFormatter = valueFormatter;
+		}
+
+		public String getAxisLabelFormatter() {
+			return axisLabelFormatter;
+		}
+
+		public void setAxisLabelFormatter(String axisLabelFormatter) {
+			this.axisLabelFormatter = axisLabelFormatter;
+		}
+
+		public String getTicker() {
+			return ticker;
+		}
+
+		public void setTicker(String ticker) {
+			this.ticker = ticker;
+		}
 	}
 	
 	public enum Axes{x,y,y2}

@@ -25,18 +25,12 @@ public class DyDataSeries implements Serializable,DataSeries{
 	private List<Point> dataPoints;
 	private List<AnnotationPoint> annotations;
 	private List<HighlightRegion> highlightRegions;
-	/**
-	 * Annotations
-	 */
-	private AnnotationConfigurations annotationConfigurations;
+	
 	/**
 	 * Data Series Colors
 	 */
 	private SeriesColorOptions seriesColorOptions;
-	/**
-	 * Grid
-	 */
-	private GridOptions gridOptions;
+	
 	/**
 	 * 
 	 */
@@ -58,8 +52,10 @@ public class DyDataSeries implements Serializable,DataSeries{
 	public void addDataPoint(Point dyPoint){
 		dataPoints.add(dyPoint);
 	}
-
-	public void addAllDataPoint(Number[][] dyPoint){
+	public void addAllDataPoints(List<Point> dyPoints){
+		dataPoints.addAll(dyPoints);
+	}
+	public void addAllDataPoints(Number[][] dyPoint){
 		if(dyPoint == null || dyPoint.length == 0){
 			throw new EmptyDataSetException("Dataset cannot be null or empty");
 		}
@@ -76,7 +72,6 @@ public class DyDataSeries implements Serializable,DataSeries{
 			for (AnnotationPoint annotationPoint : annotations) {
 				annotationPoint.setSeries(series);
 			}
-			setAnnotationConfigurations(new AnnotationConfigurations());
 		}
 		this.annotations = annotations;
 	}
@@ -99,29 +94,12 @@ public class DyDataSeries implements Serializable,DataSeries{
 		this.highlightRegions = highlightRegions;
 	}
 
-	public AnnotationConfigurations getAnnotationConfigurations() {
-		return annotationConfigurations;
-	}
-
-	public void setAnnotationConfigurations(
-			AnnotationConfigurations annotationConfigurations) {
-		this.annotationConfigurations = annotationConfigurations;
-	}
-
 	public SeriesColorOptions getSeriesColorOptions() {
 		return seriesColorOptions;
 	}
 
 	public void setSeriesColorOptions(SeriesColorOptions seriesColorOptions) {
 		this.seriesColorOptions = seriesColorOptions;
-	}
-
-	public GridOptions getGridOptions() {
-		return gridOptions;
-	}
-
-	public void setGridOptions(GridOptions gridOptions) {
-		this.gridOptions = gridOptions;
 	}
 
 	public SeriesOptions getSeriesOptions() {

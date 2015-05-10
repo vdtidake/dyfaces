@@ -1,6 +1,7 @@
 package org.dyfaces.data.api;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class AnnotationPoint implements Serializable{
 	/**
@@ -20,7 +21,11 @@ public class AnnotationPoint implements Serializable{
     
 	public AnnotationPoint(Object x, String shortText,String text) {
 		super();
-		this.x = x;
+		if(x instanceof Date){
+			this.x = ((Date)x).getTime();
+		}else{
+			this.x = x;
+		}
 		this.shortText = shortText;
 		this.text = text;
 	}

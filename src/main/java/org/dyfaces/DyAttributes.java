@@ -3,11 +3,11 @@ package org.dyfaces;
 import java.util.List;
 
 public class DyAttributes {
-	private String legend=LegendOptions.always.name();
+	private String legend;
 	private String title;
-	private Boolean showRoller=Boolean.FALSE;
-	private Integer rollPeriod=0;
-	private Boolean customBars=Boolean.FALSE;
+	private Boolean showRoller;
+	private Integer rollPeriod;
+	private Boolean customBars;
 	private String ylabel;
 	private String xlabel;
 	private List<String> labels;
@@ -20,7 +20,7 @@ public class DyAttributes {
 	/*
 	 * Grid settings
 	 */
-	private Boolean drawGrid=Boolean.TRUE;
+	private Boolean drawGrid;
 	private Boolean drawXAxis;
 	private Boolean drawYAxis;
 	/*

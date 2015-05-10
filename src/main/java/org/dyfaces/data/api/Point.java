@@ -1,6 +1,6 @@
 package org.dyfaces.data.api;
 
-public interface Point extends Comparable<Point>{
+public interface Point{
 	public Object getxValue();
 
 	public void setxValue(Object xValue);

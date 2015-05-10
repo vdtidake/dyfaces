@@ -17,21 +17,15 @@ public interface DataSeries {
 
 	public void addHighlightRegions(List<HighlightRegion> highlightRegions);
 	
-	public AnnotationConfigurations getAnnotationConfigurations();
-	
-	public void setAnnotationConfigurations(AnnotationConfigurations annotationConfigurations);
-	
 	public SeriesColorOptions getSeriesColorOptions();
 
 	public void setSeriesColorOptions(SeriesColorOptions seriesOptions);
-	
-	public GridOptions getGridOptions();
-	
-	public void setGridOptions(GridOptions gridOptions);
 	
 	public SeriesOptions getSeriesOptions();
 
 	public void setSeriesOptions(SeriesOptions seriesOptions);
 	
-	public void addAllDataPoint(Number[][] dyPoint);
+	public void addAllDataPoints(List<Point> dyPoints);
+	
+	public void addAllDataPoints(Number[][] dyPoint);
 }

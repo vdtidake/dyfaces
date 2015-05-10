@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.el.ELContext;
 import javax.el.ValueExpression;
@@ -24,6 +27,7 @@ import javax.faces.event.FacesEvent;
 
 import org.dyfaces.FacesParam;
 import org.dyfaces.data.api.AnnotationPoint;
+import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.HighlightRegion;
 import org.dyfaces.data.api.Point;
@@ -33,7 +37,6 @@ import org.dyfaces.event.AnnotationClicked;
 import org.dyfaces.event.GraphClicked;
 import org.dyfaces.event.GraphZoomed;
 import org.dyfaces.event.PointClicked;
-import org.dyfaces.exception.InvalidDataInputException;
 import org.dyfaces.utils.DyUtils;
 
 import com.google.gson.Gson;
@@ -50,6 +53,8 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	private static final Collection<String> EVENTS = Collections.unmodifiableCollection(Arrays.asList(DEFAULT_EVENT,EVENT_POINTCLICKED,EVENT_ANNOCLICKED,EVENT_ANNODBLCLICKED,EVENT_GRAPHZOOMED));
 	private static final Gson gson = new Gson();
 
+	private static final String dyDateFormatter = "valueFormatter: Dygraph.dateString_,axisLabelFormatter: Dygraph.dateAxisFormatter,ticker: Dygraph.dateTicker,";
+	
 	@Override
 	public String getFamily() {
 		return COMPONENT_FAMILY;
@@ -65,30 +70,6 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
     public String getDefaultEventName() {
         return DEFAULT_EVENT;
     }
-
-	/**
-	 * 
-	 * @return dataset with either value or dataseries
-	 */
-	public Object getDyDataModel() {
-		byte dataInputs = 0;
-		Object dyDataModel = null;
-		Object value = getValue();
-		if (value != null) {
-			dyDataModel = value;
-			dataInputs++;
-		}
-		Object series = getValue("series");
-		if (series != null) {
-			dyDataModel = series;
-			dataInputs++;
-		}
-		
-		if (dataInputs != 1 || dyDataModel == null) {
-			throw new InvalidDataInputException("no or more than one data inputs found for graph");
-		}
-		return dyDataModel;
-	}
 
 	public List<AnnotationPoint> getAnnotations() {
 		return (List<AnnotationPoint>)getValue("annotations");
@@ -196,13 +177,6 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
     public void setSeriesOptions(SeriesOptions value) {
     	setValue("seriesOptions",value);
     }
-    
-    public String getData() {
-		return (String) getValue("data");
-	}
-	public void setData(String value) {
-		setValue("data",value);
-    }
 	
 	public Integer getThreshold() {
 		Integer threshold = (Integer) getValue("threshold");
@@ -216,38 +190,13 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 		setValue("threshold", value);
 	}
 	
-	public DataSeries getSeries() {
-		DataSeries dataseries = (DataSeries) getValue("series");
-		
-		/**
-		 * series lables
-		 */
-		List<String> seriesLabels = new ArrayList<String>(2);
-		seriesLabels.add(dataseries.getSeries());
-		String name = dataseries.getSeries();
-		if (name != null && !name.isEmpty()) {
-			seriesLabels.add(name);
-		}
-		if(seriesLabels.size() > 1){
-			setLabels(seriesLabels);
-		}
-		/**
-		 * annotations and highlight points
-		 */
-		List<AnnotationPoint> annotationPoints = dataseries.getAnnotations();
-		if(annotationPoints != null && !annotationPoints.isEmpty()){
-			setAnnotations(annotationPoints);
-		}
-		List<HighlightRegion> highlightRegions = dataseries.getHighlightRegions();
-		if(highlightRegions != null && !highlightRegions.isEmpty()){
-			setHighlightRegions(highlightRegions);
-		}
-		return dataseries;
+	public Boolean isDateAxis() {
+		return (Boolean) getValue("dateAxis");
 	}
-	
-	public void setSeries(DataSeries value) {
-		setValue("series",value);
+	public void setDateAxis(Boolean value) {
+		setValue("dateAxis",value);
     }
+	
 	/**
 	 * 
 	 * @param param
@@ -327,6 +276,7 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			writer.writeAttribute("type", "hidden", null);
 			writer.writeAttribute("id", graphJSVar + "dataValue", null);
 			writer.writeAttribute("name", graphJSVar + "dataValue", null);
+			//writer.writeAttribute("value",prepareDygraphData(), null);
 			writer.endElement("input");
 			
 	 }
@@ -407,49 +357,22 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	 * @return parsed Dygraph data
 	 */
 	public StringBuilder prepareDygraphData() {
-		Object dataModel= getDyDataModel();
+		DataModel dataset= (DataModel) getValue();
+		Class datasetXAxisType = dataset.getxAxisType();
 		StringBuilder data = new StringBuilder("[");
-		Integer threshold = getThreshold();
-		if(dataModel instanceof List){
-			/*
-			 * Single Dygraph series with a List<DyPoint>
-			 */
-			try{
-				List<Point> pointsTotal = (List<Point>) dataModel;
-				List<Point> points = null;
-				if(threshold > 0){
-					points = DyUtils.desampleData(pointsTotal,threshold);
-				}else{
-					points = pointsTotal;
-				}
-				if(points != null && !points.isEmpty()){
-					/*
-					 * sorted on X axis ascending
-					 */
-					Collections.sort(points);
-					for (Iterator<Point> iterator = points.iterator(); iterator.hasNext();) {
-						Point point = iterator.next();
-						if(point.getxValue() instanceof Date){
-							data.append(Arrays.asList(DyUtils.getJSDyDate(point.getxValue()),point.getyValue()));
-						}else{
-							data.append(Arrays.asList(point.getxValue(),point.getyValue()));
-						}
-						if(iterator.hasNext()){
-							data.append(",");
-						}
-					}
-					
-				}
-			}catch(ClassCastException castException){
-				List<DataSeries> dataSerieses = (List<DataSeries>) dataModel;
-				if(dataSerieses != null && !dataSerieses.isEmpty()){
-					//TODO 
-				}
-			}
-			
-		}else if(dataModel instanceof DataSeries){
-			DataSeries dataseries = (DataSeries) dataModel;
-			if(dataseries != null){
+		int threshold = 0;
+		List<DataSeries> dataserieses = dataset.getDataSerieses();
+		boolean isDate = false;
+		boolean isLong = false;
+		
+		Map<Number,Map<Integer,Number>> dataMapper = new TreeMap<Number, Map<Integer,Number>>();
+		List<AnnotationPoint> annotationPoints = new ArrayList<AnnotationPoint>();
+		List<HighlightRegion> highlightRegions = new ArrayList<HighlightRegion>();
+		List<String> labels = new ArrayList<String>();
+		
+		if(dataserieses != null && !dataserieses.isEmpty()){
+			for (int seriesCount = 0; seriesCount < dataserieses.size();seriesCount++) {
+				DataSeries dataseries = dataserieses.get(seriesCount);
 				List<Point> pointsTotal = dataseries.getDataPoints();
 				List<Point> points = null;
 				if(threshold > 0){
@@ -457,27 +380,82 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 				}else{
 					points = pointsTotal;
 				}
+				
 				if(points != null){
-					Collections.sort(points);
+					if(datasetXAxisType.getName().equals(Date.class.getName())){
+						isDate = true;
+						try{
+							Date no1 = (Date) points.get(0).getxValue();
+						}catch(ClassCastException e){
+							//java.lang.Long cannot be cast to java.util.Date
+							isLong = true;
+						}
+					}
+					
 					for (Iterator<Point> iterator = points.iterator(); iterator.hasNext();) {
 						Point point = iterator.next();
-						if(point.getxValue() instanceof Date){
-							data.append(Arrays.asList(DyUtils.getJSDyDate(point.getxValue()),point.getyValue()));
+						if(isDate && !isLong){
+							Long xval = ((Date)point.getxValue()).getTime();
+							if(dataMapper.containsKey(xval)){
+								Map<Integer,Number> seriesMap = dataMapper.get(xval);
+								seriesMap.put(seriesCount, point.getyValue());
+							}else{
+								Map<Integer,Number> seriesMap = new HashMap<Integer, Number>();
+								seriesMap.put(seriesCount,point.getyValue());
+								dataMapper.put(xval, seriesMap);
+							}
 						}else{
-							data.append(Arrays.asList(point.getxValue(),point.getyValue()));
-						}
-						if(iterator.hasNext()){
-							data.append(",");
+							
+							Long xval = (Long) point.getxValue();
+							if(dataMapper.containsKey(xval)){
+								Map<Integer,Number> seriesMap = dataMapper.get(xval);
+								seriesMap.put(seriesCount, point.getyValue());
+							}else{
+								Map<Integer,Number> seriesMap = new HashMap<Integer, Number>();
+								seriesMap.put(seriesCount,point.getyValue());
+								dataMapper.put(xval, seriesMap);
+							}
 						}
 					}
 					
 				}
+				
+				List<AnnotationPoint> seriesAnnotations= dataseries.getAnnotations();
+				if(seriesAnnotations != null && !seriesAnnotations.isEmpty()){
+					annotationPoints.addAll(seriesAnnotations);
+				}
+				List<HighlightRegion> seriesHighlightRegion= dataseries.getHighlightRegions();
+				if(seriesHighlightRegion != null && !seriesHighlightRegion.isEmpty()){
+					highlightRegions.addAll(seriesHighlightRegion);
+				}
+				labels.add(dataseries.getSeries());
 			}
-			
 		}
-	
+		if(!annotationPoints.isEmpty()){
+			setAnnotations(annotationPoints);
+		}
+		if(!highlightRegions.isEmpty()){
+			setHighlightRegions(highlightRegions);
+		}
+		if(!labels.isEmpty()){
+			labels.add(0,"X");
+			setLabels(labels);
+		}
+		int seriesCount = dataserieses.size();
+		for(Map.Entry<Number, Map<Integer,Number>> entry:dataMapper.entrySet()){
+			Number key = entry.getKey();
+			Map<Integer,Number> value = entry.getValue();
+			data.append("[").append(key).append(",");
+			for (int i = 0; i < seriesCount; i++) {
+				data.append(value.get(i));
+				if(i < seriesCount-1){
+					data.append(",");
+				}
+			}
+			data.append("],");
+		}
 		data.append("]");
-		setData(data.toString());
+		setDateAxis(isDate);
 		return data;
 	}
 	 
