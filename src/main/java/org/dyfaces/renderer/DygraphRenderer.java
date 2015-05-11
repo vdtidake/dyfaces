@@ -50,6 +50,8 @@ import com.google.gson.JsonElement;
 				+ "/underscore-min.js", target = "head"), 
 		@ResourceDependency(library = "webjars", name = Version.MOMENT_RESOURCES
 				+ "/moment.js", target = "head"),
+		@ResourceDependency(library = "webjars", name = Version.QTIP2_RESOURCES
+				+ "/jquery.qtip.min.css", target = "head"),
 		@ResourceDependency(library = "dyfaces", name = "js/dyfaces.js")})
 @ListenerFor(systemEventClass = PostAddToViewEvent.class)
 public class DygraphRenderer extends Renderer implements ComponentSystemEventListener{
@@ -95,6 +97,11 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		 */
 		StringBuilder graphBuilder = new StringBuilder(dyjsVar).append("(function () {var "+graphJSVar+"= new Dygraph(");
 		graphBuilder.append("document.getElementById(\"").append(graphJSVar).append("\"),");
+		
+		Boolean showTooltip = dygraph.isTooltip();
+		if(showTooltip != null && showTooltip){
+			initTooltip(context, graphJSVar);
+		}
 		/*
 		 * get Dygraph data defined with either value or model attribute
 		 */
@@ -194,6 +201,14 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		    String zoom = getScript(context, dygraph, Dygraph.EVENT_GRAPHZOOMED, graphJSVar);
 				
 		    callBackMap.put(Callback.ZoomCallback, "dyZoomCallbackFn("+dyzoomCallback+",\""+zoom+"\",'"+graphJSVar+"')");
+		}
+		Boolean showTooltip = dygraph.isTooltip();
+		if(showTooltip != null && showTooltip){
+			String dyHighlightCallback = "''";
+			 if(callBackMap.containsKey(Callback.HighlightCallback)){
+				 dyHighlightCallback = "'"+callBackMap.get(Callback.HighlightCallback)+"'";
+			 }
+		    callBackMap.put(Callback.HighlightCallback, "dyHighlightCallbackFn("+dyHighlightCallback+",'"+graphJSVar+"')");
 		}
 		if(callBackMap == null){
 			callBackMap = new HashMap<String, Object>();
@@ -370,6 +385,11 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 			graphBuilder.append(DyUtils.getAttribute("title", ttl));
 		}
 		
+		Boolean isLabelsUTC = dygraph.isLabelsUTC();
+		if(isLabelsUTC != null){
+			graphBuilder.append(DyUtils.getAttribute("labelsUTC", isLabelsUTC));
+		}
+		
 		setGridOptions(dygraph,graphBuilder);
 	}
 	
@@ -395,9 +415,9 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		writer.write(graphBuilder.toString());
 	}
 	
-	private void initTooltip(FacesContext context,String dygraph) throws IOException{
+	private void initTooltip(FacesContext context,String graphJSVar) throws IOException{
 		ResponseWriter writer = context.getResponseWriter();
-		StringBuilder graphBuilder = new StringBuilder("var tooltip = $('#").append(dygraph).append("').qtip({id: '").append(dygraph).append("',prerender: true,content: ' ',position: {target: 'mouse',viewport: $('#").append(dygraph).append("'),adjust: { x: 5, y: 5 } },    show: false,});");
+		StringBuilder graphBuilder = new StringBuilder("var tooltip = $('#").append(graphJSVar).append("').qtip({id: '").append(graphJSVar).append("',prerender: true,content: ' ',position: {target: 'mouse',viewport: $('#").append(graphJSVar).append("'),adjust: { x: 5, y: 5 } },    show: false,});");
 		writer.write(graphBuilder.toString());
 	}
 
@@ -438,7 +458,7 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
         }
         
         if(addQtip){
-            DyfacesUtils.addStyleResource(context, "dyfaces-qtip2css", Version.QTIP2_RESOURCES+"/jquery.qtip.min.css");
+            //DyfacesUtils.addStyleResource(context, "dyfaces-qtip2css", Version.QTIP2_RESOURCES+"/jquery.qtip.min.css");
             DyfacesUtils.addScriptResource(context, "dyfaces-qtip2js", Version.QTIP2_RESOURCES+"/jquery.qtip.min.js");
         }
         

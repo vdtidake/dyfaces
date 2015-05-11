@@ -137,3 +137,15 @@ var dyRollPeriodChangeFn = function(graph,rollPeriodVal){
 	}
 	graph.updateOptions({rollPeriod:parseInt(rollPeriodVal)});
 }
+
+var dyHighlightCallbackFn = function(userCallback,graphId) {
+	return function(event, x, points, row, seriesName) {
+		//seriesName: name of the highlighted series, only present if highlightSeriesOpts is set.
+		 var  api = tooltip.qtip();
+		 var tooltipContent = dyTooltipContent(event, x, points, row, seriesName);
+         api.set('content.text',tooltipContent);
+         //console.log('seriesName '+JSON.stringify(points));
+         //api.set('content.title',seriesName);
+         api.show(event);
+	}
+}

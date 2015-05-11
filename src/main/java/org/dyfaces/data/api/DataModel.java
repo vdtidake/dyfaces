@@ -12,5 +12,5 @@ public interface DataModel {
 	public void setGridOptions(GridOptions gridOptions);
 	public AnnotationConfigurations getAnnotationConfigurations();
 	public void setAnnotationConfigurations(AnnotationConfigurations annotationConfigurations);
-	
+	public ConfigOptions getConfigOptions();
 }

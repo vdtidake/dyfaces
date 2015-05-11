@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.dyfaces.data.api.AnnotationConfigurations;
+import org.dyfaces.data.api.ConfigOptions;
 import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.GridOptions;
@@ -22,6 +23,11 @@ public class DyDataModel implements DataModel,Serializable{
 	 * Annotations
 	 */
 	private AnnotationConfigurations annotationConfigurations;
+	/**
+	 * 
+	 * Configurations
+	 */
+	private ConfigOptions configOptions = new ConfigOptions();
 	
 	public DyDataModel(Class xAxisType) {
 		this.xAxisType = xAxisType;
@@ -63,4 +69,8 @@ public class DyDataModel implements DataModel,Serializable{
 		this.annotationConfigurations = annotationConfigurations;
 	}
 
+	public ConfigOptions getConfigOptions() {
+		return configOptions;
+	}
+	
 }

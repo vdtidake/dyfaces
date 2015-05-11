@@ -26,6 +26,7 @@ import javax.faces.event.FacesEvent;
 
 import org.dyfaces.FacesParam;
 import org.dyfaces.data.api.AnnotationPoint;
+import org.dyfaces.data.api.ConfigOptions;
 import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.HighlightRegion;
@@ -192,6 +193,13 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 	}
 	public void setDateAxis(Boolean value) {
 		setValue("dateAxis",value);
+    }
+	
+	public Boolean isLabelsUTC() {
+		return (Boolean) getValue("labelsUTC");
+	}
+	public void setLabelsUTC(Boolean value) {
+		setValue("labelsUTC",value);
     }
 	
 	/**
@@ -436,6 +444,13 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 			labels.add(0,"X");
 			setLabels(labels);
 		}
+		
+		ConfigOptions configOptions= dataset.getConfigOptions();
+		Boolean labelsUTC = configOptions.getLabelsUTC();
+		if(labelsUTC != null){
+			setLabelsUTC(labelsUTC);
+		}
+		
 		int seriesCount = dataserieses.size();
 		for(Map.Entry<Number, Map<Integer,Number>> entry:dataMapper.entrySet()){
 			Number key = entry.getKey();
