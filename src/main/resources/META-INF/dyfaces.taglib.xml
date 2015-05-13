@@ -18,6 +18,12 @@
 			<type>java.lang.String</type>
 		</attribute>
 		<attribute>
+            <description><![CDATA[Datasource of the component]]></description>
+            <name>value</name>
+            <required>false</required>
+            <type>java.lang.Object</type>
+        </attribute>
+		<attribute>
 			<description><![CDATA[Boolean value to specify the rendering of the component, when set to false component will not be rendered.]]>
             </description>
 			<name>rendered</name>
@@ -38,30 +44,15 @@
 			<required>false</required>
 			<type>java.lang.Integer</type>
 		</attribute>
-		<attribute>
-			<name>legend</name>
-			<required>false</required>
-			<type>java.lang.String</type>
-		</attribute>
-		<attribute>
+			<attribute>
 			<name>title</name>
 			<required>false</required>
 			<type>java.lang.String</type>
 		</attribute>
 		<attribute>
-			<name>showRoller</name>
+			<name>legend</name>
 			<required>false</required>
-			<type>java.lang.Boolean</type>
-		</attribute>
-		<attribute>
-			<name>rollPeriod</name>
-			<required>false</required>
-			<type>java.lang.Integer</type>
-		</attribute>
-		<attribute>
-			<name>customBars</name>
-			<required>false</required>
-			<type>java.lang.Boolean</type>
+			<type>java.lang.String</type>
 		</attribute>
 		<attribute>
 			<name>ylabel</name>
@@ -78,13 +69,22 @@
 			<required>false</required>
 			<type>java.lang.Object</type>
 		</attribute>
-        <attribute>
-            <description><![CDATA[Datasource of the component]]></description>
-            <name>value</name>
-            <required>false</required>
-            <type>java.lang.Object</type>
-        </attribute>
-        <!-- POINT SETTINGS -->
+		<attribute>
+			<name>showRoller</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>rollPeriod</name>
+			<required>false</required>
+			<type>java.lang.Integer</type>
+		</attribute>
+		<attribute>
+			<name>customBars</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute> 
+		<!-- POINT SETTINGS -->
         <attribute>
 			<name>drawPoints</name>
 			<required>false</required>
@@ -99,9 +99,9 @@
 			<name>highlightCircleSize</name>
 			<required>false</required>
 			<type>java.lang.Short</type>
-		</attribute>
-		 <!-- GRID SETTINGS -->
-		  <attribute>
+		</attribute> 
+		<!-- GRID SETTINGS -->
+		<attribute>
 			<name>drawGrid</name>
 			<required>false</required>
 			<type>java.lang.Boolean</type>
@@ -158,16 +158,6 @@
 			<required>false</required>
 			<type>java.lang.Boolean</type>
 		</attribute>
-		 <attribute>
-			<name>annotations</name>
-			<required>false</required>
-			<type>java.lang.Object</type>
-		</attribute>
-		 <attribute>
-			<name>highlightRegions</name>
-			<required>false</required>
-			<type>java.lang.Object</type>
-		</attribute>
 		<attribute>
 			<name>synchronize</name>
 			<required>false</required>
@@ -187,6 +177,123 @@
 			<name>labelsUTC</name>
 			<required>false</required>
 			<type>java.lang.Boolean</type>
+		</attribute>
+		<!-- from config options -->
+		<attribute>
+			<name>showRangeSelector</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>rangeSelectorHeight</name>
+			<required>false</required>
+			<type>java.lang.Integer</type>
+		</attribute>
+		<attribute>
+			<name>rangeSelectorPlotStrokeColor</name>
+			<required>false</required>
+			<type>java.lang.String</type>
+		</attribute>
+		<attribute>
+			<name>rangeSelectorPlotFillColor</name>
+			<required>false</required>
+			<type>java.lang.String</type>
+		</attribute>
+		<attribute>
+			<name>labelsDivStyles</name>
+			<required>false</required>
+			<type>java.lang.String</type>
+		</attribute>
+		<attribute>
+			<name>labelDivWidth</name>
+			<required>false</required>
+			<type>java.lang.Integer</type>
+		</attribute>
+		<attribute>
+			<name>titleHeight</name>
+			<required>false</required>
+			<type>java.lang.Integer</type>
+		</attribute>
+		<attribute>
+			<name>strokeWidth</name>
+			<required>false</required>
+			<type>java.lang.Double</type>
+		</attribute>
+		<attribute>
+			<name>includeZero</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>avoidMinZero</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>xRangePad</name>
+			<required>false</required>
+			<type>java.lang.Integer</type>
+		</attribute>
+		<attribute>
+			<name>yRangePad</name>
+			<required>false</required>
+			<type>java.lang.Integer</type>
+		</attribute>
+		<attribute>
+			<name>drawAxesAtZero</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+            <name>dateWindow</name>
+            <required>false</required>
+            <type>java.lang.Object</type>
+        </attribute>
+        <attribute>
+            <name>valueRange</name>
+            <required>false</required>
+            <type>java.lang.Object</type>
+        </attribute>
+        <attribute>
+			<name>drawPoints</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>errorBars</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>logscale</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>animatedZooms</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>stackedGraph</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>highlightSeriesOpts</name>
+			<required>false</required>
+			<type>java.lang.Object</type>
+		</attribute>
+		<!-- dyfaces specific -->
+		<attribute>
+			<name>annotations</name>
+			<required>false</required>
+			<type>java.lang.Object</type>
+		</attribute>
+		<attribute>
+			<name>highlightRegions</name>
+			<required>false</required>
+			<type>java.lang.Object</type>
 		</attribute>
 	</tag>
 </facelet-taglib>

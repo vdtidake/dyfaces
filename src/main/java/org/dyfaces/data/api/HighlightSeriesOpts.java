@@ -4,14 +4,20 @@ import java.io.Serializable;
 
 @SuppressWarnings("serial")
 public class HighlightSeriesOpts implements Serializable{
-	private Integer strokeWidth;
+	private Double strokeWidth;
 	private Integer strokeBorderWidth;
 	private Integer highlightCircleSize;
 	
-	public Integer getStrokeWidth() {
+	public void initDefault(){
+		strokeWidth=3D;
+		strokeBorderWidth=1;
+		highlightCircleSize=5;
+	}
+	
+	public Double getStrokeWidth() {
 		return strokeWidth;
 	}
-	public void setStrokeWidth(Integer strokeWidth) {
+	public void setStrokeWidth(Double strokeWidth) {
 		this.strokeWidth = strokeWidth;
 	}
 	public Integer getStrokeBorderWidth() {

@@ -32,6 +32,7 @@ import org.dyfaces.data.api.GridOptions;
 import org.dyfaces.data.api.GridOptions.Axes;
 import org.dyfaces.data.api.GridOptions.PerAxis;
 import org.dyfaces.data.api.HighlightRegion;
+import org.dyfaces.data.api.HighlightSeriesOpts;
 import org.dyfaces.utils.DyUtils;
 import org.dyfaces.utils.DyfacesUtils;
 
@@ -100,6 +101,20 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		
 		Boolean showTooltip = dygraph.isTooltip();
 		if(showTooltip != null && showTooltip){
+			DataModel dataModel = (DataModel) dygraph.getValue();
+			HighlightSeriesOpts highlightSeriesOpts = dataModel.getConfigOptions().getHighlightSeriesOpts();
+			Double strokWidth = highlightSeriesOpts.getStrokeWidth();
+			if(strokWidth == null || strokWidth == 0D){
+				highlightSeriesOpts.setStrokeWidth(3D);
+			}
+			Integer borderWidth = highlightSeriesOpts.getStrokeBorderWidth();
+			if(borderWidth == null || borderWidth == 0){
+				highlightSeriesOpts.setStrokeBorderWidth(1);
+			}
+			Integer circleSize = highlightSeriesOpts.getHighlightCircleSize();
+			if(circleSize == null || circleSize == 0){
+				highlightSeriesOpts.setHighlightCircleSize(5);
+			}
 			initTooltip(context, graphJSVar);
 		}
 		/*
@@ -388,6 +403,12 @@ public class DygraphRenderer extends Renderer implements ComponentSystemEventLis
 		Boolean isLabelsUTC = dygraph.isLabelsUTC();
 		if(isLabelsUTC != null){
 			graphBuilder.append(DyUtils.getAttribute("labelsUTC", isLabelsUTC));
+		}
+		
+		DataModel dataModel = (DataModel) dygraph.getValue();
+		String hoJson = gson.toJson(dataModel.getConfigOptions().getHighlightSeriesOpts());
+		if(!hoJson.equals("{}")){
+			graphBuilder.append(DyUtils.getAttribute("highlightSeriesOpts", hoJson));
 		}
 		
 		setGridOptions(dygraph,graphBuilder);

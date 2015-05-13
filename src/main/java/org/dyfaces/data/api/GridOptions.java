@@ -52,7 +52,7 @@ public class GridOptions implements Serializable{
 		return axisGridOptions;
 	}
 
-	public class PerAxis{
+	public class PerAxis implements Serializable{
 		/**
 		 * per axis options
 		 */

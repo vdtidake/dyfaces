@@ -30,6 +30,7 @@ import org.dyfaces.data.api.ConfigOptions;
 import org.dyfaces.data.api.DataModel;
 import org.dyfaces.data.api.DataSeries;
 import org.dyfaces.data.api.HighlightRegion;
+import org.dyfaces.data.api.HighlightSeriesOpts;
 import org.dyfaces.data.api.Point;
 import org.dyfaces.data.api.SelectedPointDetails;
 import org.dyfaces.data.api.SeriesOptions;
@@ -73,8 +74,8 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 		return (List<AnnotationPoint>)getValue("annotations");
 	}
 	
-	public void setAnnotations(List<AnnotationPoint> value) {
-		setValue("annotations",value);
+	public void setAnnotations(List<AnnotationPoint> annotations) {
+		setValue("annotations",annotations);
     }
 	
 
@@ -82,66 +83,66 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 		return (List<HighlightRegion>) getValue("highlightRegions");
 	}
 	
-	public void setHighlightRegions(List<HighlightRegion> value) {
-		setValue("highlightRegions",value);
+	public void setHighlightRegions(List<HighlightRegion> highlightRegions) {
+		setValue("highlightRegions",highlightRegions);
     }
 
 	public String getSynchronize() {
 		return (String) getValue("synchronize");
 	}
-	public void setSynchronize(String value) {
-		setValue("synchronize",value);
+	public void setSynchronize(String synchronize) {
+		setValue("synchronize",synchronize);
     }
 	
 	public Boolean isTooltip() {
 		return (Boolean) getValue("tooltip");
 	}
-	public void setTooltip(Boolean value) {
-		setValue("tooltip",value);
+	public void setTooltip(Boolean tooltip) {
+		setValue("tooltip",tooltip);
     }
 	
 	public String getVar() {
 		return (String) getValue("var");
 	}
-	public void setVar(String value) {
-		setValue("var",value);
+	public void setVar(String var) {
+		setValue("var",var);
     }
 
 	public String getTitle() {
 		return (String) getValue("title");
 	}
-	public void setTitle(String value) {
-		setValue("title",value);
+	public void setTitle(String title) {
+		setValue("title",title);
     }
 	
 	public String getXlabel() {
 		return (String) getValue("xlabel");
 	}
-	public void setXlabel(String value) {
-		setValue("xlabel",value);
+	public void setXlabel(String xlabel) {
+		setValue("xlabel",xlabel);
     }
 	
 	public String getYlabel() {
 		return (String) getValue("ylabel");
 	}
-	public void setYlabel(String value) {
-		setValue("ylabel",value);
+	public void setYlabel(String ylabel) {
+		setValue("ylabel",ylabel);
     }
 	
 	public List<String> getLabels() {
 		return (List<String>) getValue("labels");
 	}
 	
-	public void setLabels(List<String> value) {
-		setValue("labels",value);
+	public void setLabels(List<String> labels) {
+		setValue("labels",labels);
     }
 	
 	public String getStyle() {
         return (String) getValue("style");
     }
 
-    public void setStyle(String value) {
-    	setValue("style",value);
+    public void setStyle(String style) {
+    	setValue("style",style);
     }
     
     public Integer getHeight() {
@@ -152,8 +153,8 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
         return h;
     }
 
-    public void setHeight(Integer value) {
-        setValue("height", value);
+    public void setHeight(Integer height) {
+        setValue("height", height);
     }
 
     public Integer getWidth() {
@@ -164,16 +165,16 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
         return w;
     }
 
-    public void setWidth(Integer value) {
-    	setValue("width", value);
+    public void setWidth(Integer width) {
+    	setValue("width", width);
     }
     
     public SeriesOptions getSeriesOptions() {
         return (SeriesOptions) getValue("seriesOptions");
     }
 
-    public void setSeriesOptions(SeriesOptions value) {
-    	setValue("seriesOptions",value);
+    public void setSeriesOptions(SeriesOptions seriesOptions) {
+    	setValue("seriesOptions",seriesOptions);
     }
 	
 	public Integer getThreshold() {
@@ -184,24 +185,172 @@ public class Dygraph extends UIOutput implements ClientBehaviorHolder {
 		return threshold;
 	}
 
-	public void setThreshold(Integer value) {
-		setValue("threshold", value);
+	public void setThreshold(Integer threshold) {
+		setValue("threshold", threshold);
 	}
 	
 	public Boolean isDateAxis() {
 		return (Boolean) getValue("dateAxis");
 	}
-	public void setDateAxis(Boolean value) {
-		setValue("dateAxis",value);
+	public void setDateAxis(Boolean dateAxis) {
+		setValue("dateAxis",dateAxis);
     }
 	
 	public Boolean isLabelsUTC() {
 		return (Boolean) getValue("labelsUTC");
 	}
-	public void setLabelsUTC(Boolean value) {
-		setValue("labelsUTC",value);
+	public void setLabelsUTC(Boolean labelsUTC) {
+		setValue("labelsUTC",labelsUTC);
     }
+	public Integer getRollPeriod() {
+		return (Integer) getValue("rollPeriod");
+	}
+	public void setRollPeriod(Integer rollPeriod) {
+		setValue("rollPeriod",rollPeriod);
+	}
+	public Boolean getShowRoller() {
+		return (Boolean) getValue("showRoller");
+	}
+	public void setShowRoller(Boolean showRoller) {
+		setValue("showRoller",showRoller);
+	}
+	public Boolean getCustomBars() {
+		return (Boolean) getValue("customBars");
+	}
+	public void setCustomBars(Boolean customBars) {
+		setValue("customBars",customBars);
+	}
+	public String getLegend() {
+		return (String) getValue("legend");
+	}
+	public void setLegend(String legend) {
+		setValue("legend",legend);
+	}
 	
+	public Boolean getShowRangeSelector() {
+		return (Boolean) getValue("showRangeSelector");
+	}
+	public void setShowRangeSelector(Boolean showRangeSelector) {
+		setValue("showRangeSelector",showRangeSelector);
+	}
+	public Integer getRangeSelectorHeight() {
+		return (Integer) getValue("rangeSelectorHeight");
+	}
+	public void setRangeSelectorHeight(Integer rangeSelectorHeight) {
+		setValue("rangeSelectorHeight",rangeSelectorHeight);
+	}
+	public String getRangeSelectorPlotStrokeColor() {
+		return (String) getValue("rangeSelectorPlotStrokeColor");
+	}
+	public void setRangeSelectorPlotStrokeColor(String rangeSelectorPlotStrokeColor) {
+		setValue("rangeSelectorPlotStrokeColor",rangeSelectorPlotStrokeColor);
+	}
+	public String getRangeSelectorPlotFillColor() {
+		return (String) getValue("rangeSelectorPlotFillColor");
+	}
+	public void setRangeSelectorPlotFillColor(String rangeSelectorPlotFillColor) {
+		setValue("rangeSelectorPlotFillColor",rangeSelectorPlotFillColor);
+	}
+	public String getLabelsDivStyles() {
+		return (String) getValue("labelsDivStyles");
+	}
+	public void setLabelsDivStyles(String labelsDivStyles) {
+		setValue("labelsDivStyles",labelsDivStyles);
+	}
+	public Integer getLabelDivWidth() {
+		return (Integer) getValue("labelDivWidth");
+	}
+	public void setLabelDivWidth(Integer labelDivWidth) {
+		setValue("labelDivWidth",labelDivWidth);
+	}
+	public Integer getTitleHeight() {
+		return(Integer) getValue("titleHeight");
+	}
+	public void setTitleHeight(Integer titleHeight) {
+		setValue("titleHeight",titleHeight);
+	}
+	public Double getStrokeWidth() {
+		return (Double) getValue("strokeWidth");
+	}
+	public void setStrokeWidth(Double strokeWidth) {
+		setValue("strokeWidth",strokeWidth);
+	}
+	public Boolean getIncludeZero() {
+		return (Boolean) getValue("includeZero");
+	}
+	public void setIncludeZero(Boolean includeZero) {
+		setValue("includeZero",includeZero);
+	}
+	public Boolean getAvoidMinZero() {
+		return (Boolean) getValue("avoidMinZero");
+	}
+	public void setAvoidMinZero(Boolean avoidMinZero) {
+		setValue("avoidMinZero",avoidMinZero);
+	}
+	public Integer getxRangePad() {
+		return (Integer) getValue("xRangePad");
+	}
+	public void setxRangePad(Integer xRangePad) {
+		setValue("xRangePad",xRangePad);
+	}
+	public Integer getyRangePad() {
+		return (Integer) getValue("yRangePad");
+	}
+	public void setyRangePad(Integer yRangePad) {
+		setValue("yRangePad",yRangePad);
+	}
+	public Boolean getDrawAxesAtZero() {
+		return (Boolean) getValue("drawAxesAtZero");
+	}
+	public void setDrawAxesAtZero(Boolean drawAxesAtZero) {
+		setValue("drawAxesAtZero",drawAxesAtZero);
+	}
+	public Number[] getDateWindow() {
+		return ( Number[]) getValue("dateWindow");
+	}
+	public void setDateWindow(Number[] dateWindow) {
+		setValue("dateWindow",dateWindow);
+	}
+	public Number[] getValueRange() {
+		return ( Number[]) getValue("valueRange");
+	}
+	public void setValueRange(Number[] valueRange) {
+		setValue("valueRange",valueRange);
+	}
+	public Boolean getDrawPoints() {
+		return (Boolean) getValue("drawPoints");
+	}
+	public void setDrawPoints(Boolean drawPoints) {
+		setValue("drawPoints",drawPoints);
+	}
+	public Boolean getErrorBars() {
+		return (Boolean) getValue("errorBars");
+	}
+	public void setErrorBars(Boolean errorBars) {
+		setValue("errorBars",errorBars);
+	}
+	public Boolean getLogscale() {
+		return (Boolean) getValue("logscale");
+	}
+	public void setLogscale(Boolean logscale) {
+		setValue("logscale",logscale);
+	}
+	public Boolean getAnimatedZooms() {
+		return (Boolean) getValue("animatedZooms");
+	}
+	public void setAnimatedZooms(Boolean animatedZooms) {
+		setValue("animatedZooms",animatedZooms);
+	}
+	
+	public Boolean getStackedGraph() {
+		return (Boolean) getValue("stackedGraph");
+	}
+	public void setStackedGraph(Boolean stackedGraph) {
+		setValue("stackedGraph",stackedGraph);
+	}
+	public HighlightSeriesOpts getHighlightSeriesOpts() {
+		return (HighlightSeriesOpts) getValue("highlightSeriesOpts");
+	}
 	/**
 	 * 
 	 * @param param
